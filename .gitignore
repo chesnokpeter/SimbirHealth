@@ -1,0 +1,5 @@
+.bash
+__pycache__
+venv
+scripts/migrations/versions/*
+!scripts/migrations/versions/.gitkeep

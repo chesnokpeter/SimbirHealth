@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 
 from core.exceptions import CoreException
 # from t0d0d0d0.restback.exceptions import JWTExceptions
@@ -32,16 +32,9 @@ async def ping():
 
 apiRouter.include_router(authenticationR)
 
-
-
-# @app.exception_handler(JWTExceptions)
-# async def exception_handler(res, exc: JWTExceptions):
-#     return 'jwt error'
-
-
 @app.exception_handler(CoreException)
 async def exception_handler(res, exc: CoreException):
-    return 'error'
+    return JSONResponse({'error': exc.desc})
 
 
 app.include_router(apiRouter)

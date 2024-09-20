@@ -6,3 +6,7 @@ class SignUpSch(BaseModel):
     firstName: str
     username: str
     password: str
+
+class SignIn(BaseModel):
+    username: str
+    password: str

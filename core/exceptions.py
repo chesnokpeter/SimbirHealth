@@ -1,9 +1,9 @@
 class CoreException(Exception):
     error = 'Base Core Error'
 
-    def __init__(self, desc: str, *args: object) -> None:
+    def __init__(self, message: str, *args: object) -> None:
         super().__init__(*args)
-        self.desc = desc
+        self.message = message
 
 
 class UOWException(CoreException): ...
@@ -23,13 +23,3 @@ class AccountException(CoreException):
 class RestExceptions(CoreException): ...
 
 
-class JWTExceptions(RestExceptions):
-    def __init__(self, message: str, *args: object) -> None:
-        super().__init__(*args)
-        self.message = message
-
-
-class JWTAccessExceptions(JWTExceptions): ...
-
-
-class JWTRefreshExceptions(JWTExceptions): ...

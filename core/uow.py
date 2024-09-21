@@ -5,6 +5,7 @@ from core.exceptions import NoAccessForRepo, NoConnectorForRepo
 from core.infra.abstract import AbsConnector
 from core.repos.abstract import AbsRepo
 from core.repos.account import AccountRepo
+from core.repos.lostoken import LostokenRepo
 from core.services.abstract import AbsService
 
 
@@ -65,6 +66,7 @@ class UnitOfWork(AbsUnitOfWork):
 
 class BaseUnitOfWork(AbsUnitOfWork, ABC):
     account: AccountRepo
+    lostoken: LostokenRepo
 
 
 

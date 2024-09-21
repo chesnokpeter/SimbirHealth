@@ -54,3 +54,15 @@ class ACCOUNT(Base, DbAbsTable):
             password=self.password,
             roles=self.roles,
         )
+
+class LASTOKEN(Base, DbAbsTable):
+    __tablename__ = 'lastoken'
+    id: Mapped[int] = mapped_column(
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
+    )
+    accessToken: Mapped[str] = mapped_column(String(), nullable=True)
+    refreshToken: Mapped[str] = mapped_column(String(), nullable=True)

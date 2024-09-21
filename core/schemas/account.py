@@ -10,3 +10,7 @@ class SignUpSch(BaseModel):
 class SignIn(BaseModel):
     username: str
     password: str
+
+class SignOut(BaseModel):
+    accessToken: str
+    refreshToken: str

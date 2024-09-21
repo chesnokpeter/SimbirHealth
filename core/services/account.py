@@ -2,7 +2,7 @@ from typing import Annotated, TypeAlias
 from core.enums import Roles
 from core.exceptions import AccountException
 from core.models.account import AccountModel
-from core.schemas.account import SignUpSch, SignIn
+from core.schemas.account import SignUpSch, SignIn, SignOut
 from core.services.abstract import AbsService
 from core.uow import BaseUnitOfWork, UnitOfWork, uowaccess
 
@@ -41,3 +41,19 @@ class AccountService(AbsService):
                 raise AccountException('account not found')
 
             return u.model()
+
+    @uowaccess('lostoken')
+    async def signout(self, data: SignOut) -> None:
+        async with self.uow:
+            await self.uow.lostoken.add(**data.model_dump())
+            await self.uow.commit()
+
+    @uowaccess('lostoken')
+    async def checklostoken(self, accessToken: str = None, refreshToken: str = None) -> None:
+        async with self.uow:
+            if accessToken:
+                t = await self.uow.lostoken.get_one(accessToken=accessToken)
+                if t: raise AccountException('accessToken has already been used')
+            if refreshToken:
+                t = await self.uow.lostoken.get_one(refreshToken=refreshToken)
+                if t: raise AccountException('refreshToken has already been used')

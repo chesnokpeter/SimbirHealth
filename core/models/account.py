@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from core.enums import Roles
 
-class AccountModel(BaseModel):
+from core.models.abstract import DbAbsModel
+
+class AccountModel(BaseModel, DbAbsModel):
     id: int
 
     lastName: str

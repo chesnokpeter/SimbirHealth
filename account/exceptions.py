@@ -1,9 +1,7 @@
-from core.exceptions import CoreException
+from core.exceptions import RestExceptions
 
 
-class JWTExceptions(CoreException):
-    def __init__(self, message: str, *args: object) -> None:
-        super().__init__(message, *args)
+class JWTExceptions(RestExceptions):...
 
 
 

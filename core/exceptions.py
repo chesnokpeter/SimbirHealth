@@ -15,11 +15,11 @@ class NoConnectorForRepo(UOWException): ...
 class NoAccessForRepo(UOWException): ...
 
 
-class AccountException(CoreException):
-    error = 'User Error'
-
 
 
 class RestExceptions(CoreException): ...
 
+
+class AccountException(RestExceptions):
+    error = 'User Error'
 

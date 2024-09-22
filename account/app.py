@@ -2,9 +2,10 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.exceptions import CoreException
+from core.exceptions import RestExceptions
 
 from account.api.authentication import authenticationR
+from account.api.accounts import accountsR
 
 app = FastAPI(title='SimbirHealth account')
 
@@ -18,7 +19,7 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-apiRouter = APIRouter(prefix='/api', tags=['api'])
+apiRouter = APIRouter(prefix='/api')
 
 
 @apiRouter.get('/ping')
@@ -27,9 +28,10 @@ async def ping():
 
 
 apiRouter.include_router(authenticationR)
+apiRouter.include_router(accountsR)
 
-@app.exception_handler(CoreException)
-async def exception_handler(res, exc: CoreException):
+@app.exception_handler(RestExceptions)
+async def exception_handler(res, exc: RestExceptions):
     return JSONResponse({'error': exc.message})
 
 

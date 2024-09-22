@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, Security, Body
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, Security, Body, Query
 
-from core.schemas.account import SignUpSch, SignIn, SignOut
+from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch
 from core.services.account import AccountService
+from core.models.account import AccountModel
+from core.enums import Roles
+from core.exceptions import AccountException
+from account.schemas import AccessSch, AccessRefreshSch
 
 authenticationR = APIRouter(prefix='/Authentication', tags=['Authentication'])
 
@@ -12,12 +15,13 @@ from account.depends import (
     uowdep,
     accessCreate,
     refreshCreate,
-    tokenSecure
+    tokenSecure,
+    get_token
 )
 
 
 @authenticationR.post('/SignUp')
-async def signup(data: SignUpSch, uow=Depends(uowdep(account))):
+async def signup(data: SignUpSch, uow=Depends(uowdep(account))) -> AccessRefreshSch:
     user = await AccountService(uow).signup(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
@@ -25,7 +29,7 @@ async def signup(data: SignUpSch, uow=Depends(uowdep(account))):
 
 
 @authenticationR.post('/SignIn')
-async def signin(data: SignIn, uow=Depends(uowdep(account))):
+async def signin(data: SignInSch, uow=Depends(uowdep(account))) -> AccessRefreshSch:
     user = await AccountService(uow).signin(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
@@ -34,16 +38,16 @@ async def signin(data: SignIn, uow=Depends(uowdep(account))):
 
 @authenticationR.put('/SignOut')
 async def signout(
-        data: SignOut,
+        data: SignOutSch,
         uow=Depends(uowdep(lostoken))
-    ):
+    ) -> None:
     await AccountService(uow).signout(data)
 
 
 @authenticationR.get('/Validate')
 async def validate_token(
         accessToken: str, uow=Depends(uowdep(account, lostoken))
-    ):
+    ) -> AccountModel:
     access = tokenSecure(accessToken)
     await AccountService(uow).checklostoken(accessToken)
     user = await AccountService(uow).me(int(access['id']))
@@ -53,7 +57,7 @@ async def validate_token(
 @authenticationR.post('/Refresh')
 async def refresh_token(
         refreshToken: str = Body(embed=True), uow=Depends(uowdep(account))
-    ):
+    ) -> AccessSch:
     refresh = tokenSecure(refreshToken)
 
     user = await AccountService(uow).me(int(refresh['id']))

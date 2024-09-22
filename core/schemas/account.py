@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from core.enums import Roles
 
 class SignUpSch(BaseModel):
     lastName: str
@@ -7,10 +7,18 @@ class SignUpSch(BaseModel):
     username: str
     password: str
 
-class SignIn(BaseModel):
+class SignInSch(BaseModel):
     username: str
     password: str
 
-class SignOut(BaseModel):
+class SignOutSch(BaseModel):
     accessToken: str
     refreshToken: str
+
+class UpdateSch(BaseModel):
+    lastName: str
+    firstName: str
+    password: str
+
+class AdminCreate(SignUpSch):
+    roles: list[Roles]

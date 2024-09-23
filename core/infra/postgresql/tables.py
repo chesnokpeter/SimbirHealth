@@ -10,7 +10,8 @@ from sqlalchemy import (
     Integer,
     String,
     Time,
-    inspect,
+    inspect, 
+    Boolean
 )
 from sqlalchemy import Enum 
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -44,6 +45,8 @@ class ACCOUNT(Base, DbAbsTable):
     username: Mapped[str] = mapped_column(String(), nullable=False)
     password: Mapped[str] = mapped_column(String(), nullable=False)
     roles: Mapped[list[Roles]] = mapped_column(ARRAY(Enum(Roles)), nullable=False)
+
+    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     def model(self):
         return AccountModel(

@@ -1,4 +1,4 @@
-from typing import Generic, List, Type, TypeVar
+from typing import Generic, Type, TypeVar
 
 from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
@@ -15,7 +15,7 @@ class PostgresDefaultRepo(Generic[T], DbAbsRepo[Session]):
 
     model: Type[T]
 
-    async def get(self, **data) -> List[T] | None:
+    async def get(self, **data) -> list[T] | None:
         result = await self.session.execute(
             select(self.model).order_by(self.model.id.desc()).filter_by(**data)
         )  # type: ignore
@@ -34,7 +34,7 @@ class PostgresDefaultRepo(Generic[T], DbAbsRepo[Session]):
 
     async def offset(
         self, offset: int = 0, limit: int | None = None, order=None, **data
-    ) -> List[T] | None:
+    ) -> list[T] | None:
         stmt = select(self.model).offset(offset).limit(limit).order_by(order).filter_by(**data)
         res = await self.session.execute(stmt)  # type: ignore
         res = res.all()

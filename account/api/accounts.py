@@ -65,3 +65,17 @@ async def admin_create(
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
     return {'accessToken':access, 'refreshToken':refresh}
+
+@accountsR.put('/{id}')   #!ПРОТЕСТИРОВАТЬ 
+async def admin_create(
+        id:int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
+    ) -> AccessRefreshSch:
+    access = tokenSecure(token)
+
+    user = await AccountService(uow).me(int(access['id']))
+    if not Roles.ADMIN in user.roles:
+        raise AccountException('user not admin')
+    user = await AccountService(uow).admin_update(id, data)
+    access = accessCreate({'id': str(user.id)})
+    refresh = refreshCreate({'id': str(user.id)})
+    return {'accessToken':access, 'refreshToken':refresh}

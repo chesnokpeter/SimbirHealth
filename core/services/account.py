@@ -81,12 +81,14 @@ class AccountService(AbsService):
         
 
 
+
     @uowaccess('account')
     async def get_all(self, from_: int, count: int) -> list[AccountModel] | None:
         async with self.uow:
             u = await self.uow.account.offset(from_, count)
             return [i.model() for i in u]
         
+
 
 
     @uowaccess('account')
@@ -97,5 +99,18 @@ class AccountService(AbsService):
                 raise AccountException('account already exist')
 
             u = await self.uow.account.add(**data.model_dump())
+            await self.uow.commit()
+            return u.model()
+
+
+
+    @uowaccess('account')
+    async def admin_update(self, id: int,  data: AdminCreate) -> AccountModel:
+        async with self.uow:
+            exist = await self.uow.account.get_one(username=data.username)
+            if exist:
+                raise AccountException('account already exist')
+
+            u = await self.uow.account.update(id, **data.model_dump())
             await self.uow.commit()
             return u.model()

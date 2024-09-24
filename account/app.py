@@ -6,6 +6,7 @@ from core.exceptions import RestExceptions
 
 from account.api.authentication import authenticationR
 from account.api.accounts import accountsR
+from account.api.doctors import doctorsR
 
 app = FastAPI(title='SimbirHealth account')
 
@@ -29,6 +30,7 @@ async def ping():
 
 apiRouter.include_router(authenticationR)
 apiRouter.include_router(accountsR)
+apiRouter.include_router(doctorsR)
 
 @app.exception_handler(RestExceptions)
 async def exception_handler(res, exc: RestExceptions):

@@ -114,3 +114,21 @@ class AccountService(AbsService):
             u = await self.uow.account.update(id, **data.model_dump())
             await self.uow.commit()
             return u.model()
+
+
+
+    @uowaccess('account')
+    async def get_doctors(self, nameFilter: str, from_: int, count: int) -> list[AccountModel] | None:
+        async with self.uow:
+            u = await self.uow.account.filter_by_name_from_count(nameFilter, from_, count)
+            return [i.model() for i in u if Roles.DOCTOR in  i.roles]
+        
+
+    @uowaccess('account')
+    async def get_doctor(self, id: int) -> AccountModel | None:
+        async with self.uow:
+            u = await self.uow.account.get_one(id=id)
+            return u.model() if Roles.DOCTOR in u.roles else None
+        
+
+    

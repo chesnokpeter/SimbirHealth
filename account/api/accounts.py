@@ -40,7 +40,7 @@ async def update(
     return SignUpSch(**user.model_dump())
 
 @accountsR.get('/')
-async def get_accounts(
+async def admin_get_accounts(
         count: int, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account))
     ) -> list[AccountModel] | None:
     access = tokenSecure(token)
@@ -67,7 +67,7 @@ async def admin_create(
     return {'accessToken':access, 'refreshToken':refresh}
 
 @accountsR.put('/{id}')   #!ПРОТЕСТИРОВАТЬ 
-async def admin_create(
+async def admin_update(
         id:int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
     ) -> AccessRefreshSch:
     access = tokenSecure(token)
@@ -79,3 +79,4 @@ async def admin_create(
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
     return {'accessToken':access, 'refreshToken':refresh}
+

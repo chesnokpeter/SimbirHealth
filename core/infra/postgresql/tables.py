@@ -46,7 +46,7 @@ class ACCOUNT(Base, DbAbsTable):
     password: Mapped[str] = mapped_column(String(), nullable=False)
     roles: Mapped[list[Roles]] = mapped_column(ARRAY(Enum(Roles)), nullable=False)
 
-    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    # is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
 
     def model(self):
         return AccountModel(

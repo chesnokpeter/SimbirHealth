@@ -35,7 +35,6 @@ async def update(
     ) -> SignUpSch:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
-    await AccountService(uow).me(int(access['id']))
     user = await AccountService(uow).update(int(access['id']), data)
     return SignUpSch(**user.model_dump())
 
@@ -66,17 +65,28 @@ async def admin_create(
     refresh = refreshCreate({'id': str(user.id)})
     return {'accessToken':access, 'refreshToken':refresh}
 
-@accountsR.put('/{id}')   #!ПРОТЕСТИРОВАТЬ 
+@accountsR.put('/{id}')
 async def admin_update(
         id:int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
-    ) -> AccessRefreshSch:
+    ) -> AccountModel:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
         raise AccountException('user not admin')
     user = await AccountService(uow).admin_update(id, data)
-    access = accessCreate({'id': str(user.id)})
-    refresh = refreshCreate({'id': str(user.id)})
-    return {'accessToken':access, 'refreshToken':refresh}
+    return user
+
+
+@accountsR.delete('/{id}')   
+async def admin_delete(
+        id:int, token=Security(get_token), uow=Depends(uowdep(account))
+    ):
+    access = tokenSecure(token)
+
+    user = await AccountService(uow).me(int(access['id']))
+    if not Roles.ADMIN in user.roles:
+        raise AccountException('user not admin')
+    user = await AccountService(uow).admin_delete(id)
+    return user
 

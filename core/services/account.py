@@ -118,6 +118,15 @@ class AccountService(AbsService):
 
 
     @uowaccess('account')
+    async def admin_delete(self, id: int) -> None:
+        async with self.uow:
+            await self.uow.account.update(id=id, is_deleted=True)
+            await self.uow.commit()
+            return None
+
+
+
+    @uowaccess('account')
     async def get_doctors(self, nameFilter: str, from_: int, count: int) -> list[AccountModel] | None:
         async with self.uow:
             u = await self.uow.account.filter_by_name_from_count(nameFilter, from_, count)
@@ -129,6 +138,8 @@ class AccountService(AbsService):
         async with self.uow:
             u = await self.uow.account.get_one(id=id)
             return u.model() if Roles.DOCTOR in u.roles else None
+        
+
         
 
     

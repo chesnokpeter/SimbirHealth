@@ -46,7 +46,7 @@ class ACCOUNT(Base, DbAbsTable):
     password: Mapped[str] = mapped_column(String(), nullable=False)
     roles: Mapped[list[Roles]] = mapped_column(ARRAY(Enum(Roles)), nullable=False)
 
-    # is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
+    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=True)
 
     def model(self):
         return AccountModel(
@@ -69,3 +69,22 @@ class LASTOKEN(Base, DbAbsTable):
     )
     accessToken: Mapped[str] = mapped_column(String(), nullable=True)
     refreshToken: Mapped[str] = mapped_column(String(), nullable=True)
+
+
+
+
+class HOSPITAL(Base, DbAbsTable):
+    __tablename__ = 'hospitals'
+    id: Mapped[int] = mapped_column(
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
+    )
+    name: Mapped[str] = mapped_column(String(), nullable=False)
+    adress: Mapped[str] = mapped_column(String(), nullable=False)
+    contactPhone: Mapped[str] = mapped_column(String(), nullable=False)
+    rooms: Mapped[str] = mapped_column(ARRAY(String()), nullable=False)
+
+    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=True)

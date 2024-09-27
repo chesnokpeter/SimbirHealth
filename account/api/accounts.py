@@ -40,7 +40,7 @@ async def update(
 
 @accountsR.get('/')
 async def admin_get_accounts(
-        count: int, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account))
+        count: int=100, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account))
     ) -> list[AccountModel] | None:
     access = tokenSecure(token)
 

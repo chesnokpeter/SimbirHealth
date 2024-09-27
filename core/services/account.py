@@ -137,7 +137,7 @@ class AccountService(AbsService):
     async def get_doctor(self, id: int) -> AccountModel | None:
         async with self.uow:
             u = await self.uow.account.get_one(id=id)
-            return u.model() if Roles.DOCTOR in u.roles else None
+            return u.model() if u and Roles.DOCTOR in u.roles else None
         
 
         

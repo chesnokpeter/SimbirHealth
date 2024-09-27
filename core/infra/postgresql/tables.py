@@ -21,6 +21,7 @@ from core.infra.abstract import DbAbsTable
 from core.enums import Roles
 
 from core.models.account import AccountModel
+from core.models.hospital import HospitalModel
 
 class Base(DeclarativeBase):
     def __repr__(self):
@@ -46,7 +47,7 @@ class ACCOUNT(Base, DbAbsTable):
     password: Mapped[str] = mapped_column(String(), nullable=False)
     roles: Mapped[list[Roles]] = mapped_column(ARRAY(Enum(Roles)), nullable=False)
 
-    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=True)
+    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
     def model(self):
         return AccountModel(
@@ -85,6 +86,15 @@ class HOSPITAL(Base, DbAbsTable):
     name: Mapped[str] = mapped_column(String(), nullable=False)
     adress: Mapped[str] = mapped_column(String(), nullable=False)
     contactPhone: Mapped[str] = mapped_column(String(), nullable=False)
-    rooms: Mapped[str] = mapped_column(ARRAY(String()), nullable=False)
+    rooms: Mapped[list[str]] = mapped_column(ARRAY(String()), nullable=False)
 
-    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=True)
+    is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
+
+    def model(self):
+        return HospitalModel(
+            id=self.id,
+            name=self.name,
+            adress=self.adress,
+            contactPhone=self.contactPhone,
+            rooms=self.rooms,
+        )

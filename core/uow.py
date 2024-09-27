@@ -6,6 +6,7 @@ from core.infra.abstract import AbsConnector
 from core.repos.abstract import AbsRepo
 from core.repos.account import AccountRepo
 from core.repos.lostoken import LostokenRepo
+from core.repos.hospital import HospitalRepo
 from core.services.abstract import AbsService
 
 
@@ -67,6 +68,7 @@ class UnitOfWork(AbsUnitOfWork):
 class BaseUnitOfWork(AbsUnitOfWork, ABC):
     account: AccountRepo
     lostoken: LostokenRepo
+    hospital: HospitalRepo
 
 
 

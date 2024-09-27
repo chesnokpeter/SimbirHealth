@@ -22,19 +22,13 @@ app.add_middleware(
 
 apiRouter = APIRouter(prefix='/api')
 
-
-@apiRouter.get('/ping')
-async def ping():
-    return 'pong'
-
-
 apiRouter.include_router(authenticationR)
 apiRouter.include_router(accountsR)
 apiRouter.include_router(doctorsR)
 
 @app.exception_handler(RestExceptions)
 async def exception_handler(res, exc: RestExceptions):
-    return JSONResponse({'error': exc.message})
+    return JSONResponse({'error': exc.message}, 400)
 
 
 app.include_router(apiRouter)

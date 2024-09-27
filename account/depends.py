@@ -15,27 +15,10 @@ from core.uow import UnitOfWork
 
 from account.exceptions import JWTExceptions
 
-# from fastapi_jwt import JwtAccessBearerCookie, JwtRefreshBearerCookie
-
-# access = JwtAccessBearerCookie(secret_key, False, access_expires_delta=timedelta(minutes=15))
-# refresh = JwtRefreshBearerCookie(secret_key, False, refresh_expires_delta=timedelta(days=7))
-
-
-# def accessSecure(a=Security(access)):
-#     if not a:
-#         raise JWTAccessExceptions(message='invalid jwt token')
-#     return a
-
-
-# def refreshSecure(a=Security(refresh)):
-#     if not a:
-#         raise JWTRefreshExceptions(message='invalid jwt token')
-#     return a
-
 
 
 def accessCreate(payload: dict[str, str]) -> str:
-    payload['exp'] = datetime.now(timezone.utc) + timedelta(minutes=15) 
+    payload['exp'] = datetime.now(timezone.utc) + timedelta(hours=1) 
     return jwt.encode(payload, secret_key, algorithm='HS256')
 
 

@@ -17,9 +17,9 @@ from account.depends import (
     get_token
 )
 
-@doctorsR.get('/') #!ПРОВЕРИТЬ
+@doctorsR.get('/')
 async def get_doctors(
-        nameFilter: str, count: int, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account, lostoken))
+        nameFilter: str, count: int=100, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account, lostoken))
     ) -> list[AccountModel] | None:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)

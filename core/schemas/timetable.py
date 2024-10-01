@@ -1,41 +1,38 @@
-from pydantic import BaseModel, conint, validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, ValidationError
 from datetime import datetime, timedelta
-from typing import Any
 
-class TimetableEntry(BaseModel):
-    hospitalId = conint(gt=0)  # Ensure hospitalId is a positive integer
-    doctorId = conint(gt=0)    # Ensure doctorId is a positive integer
-    from_: datetime           # Using from_ to avoid conflict with Python's keyword
-    to: datetime
+class TimetableCreateRequest(BaseModel):
+    hospitalId: int = Field(gt=0)
+    doctorId: int = Field(gt=0)
+    from_dt: datetime
+    to_dt: datetime
     room: str
+    
+    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
-    @validator('from_', 'to')
-    def check_datetime_format(cls, value: datetime) -> datetime:
-        if value.second != 0:
-            raise ValueError("Seconds must be zero in the datetime")
-        if value.minute % 30 != 0:
-            raise ValueError("Minutes must be a multiple of 30")
+    @field_validator('from_dt', 'to_dt')
+    def validate_time_format(cls, value: datetime):
+        if value.minute % 30 != 0 or value.second != 0 or value.microsecond != 0:
+            raise ValueError("Время должно быть кратно 30 минутам, секунды и микросекунды должны быть равны 0.")
         return value
 
-    @validator('to')
-    def check_duration(cls, to_value: datetime, values: dict[str, Any]) -> datetime:
-        from_value = values.get('from_')
-        if from_value is not None:
-            if to_value <= from_value:
-                raise ValueError("'to' must be greater than 'from'")
-            if to_value - from_value > timedelta(hours=12):
-                raise ValueError("Difference between 'to' and 'from' must not exceed 12 hours")
-        return to_value
+    @field_validator('to_dt')
+    def validate_time_difference(cls, to_dt: datetime, values):
+        from_dt = values.get('from_dt')
+        if from_dt and to_dt <= from_dt:
+            raise ValueError('"to" должно быть больше "from"')
+        
+        if from_dt and (to_dt - from_dt) > timedelta(hours=12):
+            raise ValueError('Разница между "to" и "from" не должна превышать 12 часов')
+        return to_dt
 
-# Example Usage
-try:
-    entry = TimetableEntry(
-        hospitalId=1,
-        doctorId=123,
-        from_="2024-04-25T11:30:00Z",
-        to="2024-04-25T12:00:00Z",
-        room="Room 101"
-    )
-    print(entry)
-except ValueError as e:
-    print(e)
+    class Config:
+        schema_extra = {
+            "example": {
+                "hospitalId": 1,
+                "doctorId": 123,
+                "from_dt": "2024-04-25T11:30:00Z",
+                "to_dt": "2024-04-25T12:00:00Z",
+                "room": "101"
+            }
+        }

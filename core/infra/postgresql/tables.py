@@ -22,6 +22,8 @@ from core.enums import Roles
 
 from core.models.account import AccountModel
 from core.models.hospital import HospitalModel
+from core.models.timetable import TimetableModel
+from core.models.appoiniment import AppoinimentModel
 
 class Base(DeclarativeBase):
     def __repr__(self):
@@ -98,3 +100,56 @@ class HOSPITAL(Base, DbAbsTable):
             contactPhone=self.contactPhone,
             rooms=self.rooms,
         )
+    
+
+class TIMETABLE(Base, DbAbsTable):
+    __tablename__ = 'timetable'
+
+    id: Mapped[int] = mapped_column(
+        Integer(),
+        unique=True,
+        primary_key=True,
+        autoincrement=True,
+        nullable=False,
+    )
+    hospital_id: Mapped[int] = mapped_column(Integer(), ForeignKey('hospitals.id'), nullable=False)
+    doctor_id: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
+    from_time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    to_time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    room: Mapped[str] = mapped_column(String(), nullable=False)
+    
+    hospital = relationship('HOSPITAL', back_populates='timetables')
+    doctor = relationship('ACCOUNT', back_populates='timetables')
+    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable")
+    
+    def model(self):
+        return TimetableModel(
+            id = self.id,
+            hospital_id = self.hospital_id,
+            doctor_id = self.doctor_id,
+            from_time = self.from_time,
+            to_time = self.to_time,
+            room = self.room,
+            appointments = self.appointments,
+        )
+
+
+class APPOINTMENT(Base, DbAbsTable):
+    __tablename__ = 'appointment'
+    id: Mapped[int] = mapped_column(
+        Integer(),
+        primary_key=True,
+        autoincrement=True,
+        nullable=False
+    )
+    timetable_id: Mapped[int] = mapped_column(ForeignKey('timetable.id'), nullable=False)
+    time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments")
+    def model(self):
+        return AppoinimentModel(
+            id = self.id,
+            timetable_id = self.timetable_id,
+            time = self.time
+        )
+
+

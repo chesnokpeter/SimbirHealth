@@ -7,7 +7,6 @@ class AccountRepo(PostgresDefaultRepo[ACCOUNT]):
     model = ACCOUNT
     reponame = 'account'
 
-
     async def get(self, **data) -> list[ACCOUNT] | None:
         result = await self.session.execute(
             select(self.model).order_by(self.model.id.desc()).filter_by(**data)

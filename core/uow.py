@@ -3,11 +3,11 @@ from functools import wraps
 
 from core.exceptions import NoAccessForRepo, NoConnectorForRepo
 from core.infra.abstract import AbsConnector
-from core.repos.abstract import AbsRepo
+from core.repos.abstract import AbsRepo, RestAPIAbsRepo
 from core.repos.account import AccountRepo
 from core.repos.lostoken import LostokenRepo
 from core.repos.hospital import HospitalRepo
-from core.services.abstract import AbsService
+from core.repos.timetable import TimetableRepo
 
 
 class AbsUnitOfWork(ABC):
@@ -66,14 +66,14 @@ class UnitOfWork(AbsUnitOfWork):
 
 
 class BaseUnitOfWork(AbsUnitOfWork, ABC):
-    account: AccountRepo
-    lostoken: LostokenRepo
-    hospital: HospitalRepo
+    account: AccountRepo | RestAPIAbsRepo
+    lostoken: LostokenRepo | RestAPIAbsRepo
+    hospital: HospitalRepo | RestAPIAbsRepo
+    timetable: TimetableRepo | RestAPIAbsRepo
 
 
 
-class AbsService(AbsService):
-    uow: UnitOfWork
+
 
 
 def uowaccess(*access: str):
@@ -81,7 +81,7 @@ def uowaccess(*access: str):
 
     def decorator(func):
         @wraps(func)
-        async def wrapper(self: AbsService, *args, **kwargs):
+        async def wrapper(self: ..., *args, **kwargs):
             for i in access:
                 if not getattr(self.uow, i, False):
                     raise NoAccessForRepo(f'No Access For Repo "{i}"')

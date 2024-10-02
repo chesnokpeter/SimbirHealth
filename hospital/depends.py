@@ -6,7 +6,6 @@ from core.config import postgres_url, redis_port, redis_host
 
 from core.models.account import AccountModel
 from core.infra.postgresql import PostgresConnector
-from core.infra.redis import RedisConnector
 from core.repos.abstract import AbsRepo
 from core.repos.hospital import HospitalRepo
 from core.exceptions import RestExceptions
@@ -17,7 +16,6 @@ import httpx
 
 
 postgres = PostgresConnector(postgres_url)
-redis = RedisConnector(redis_host, redis_port)
 
 connectors = [postgres]
 

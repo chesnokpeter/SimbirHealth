@@ -36,7 +36,7 @@ async def get_hospital_rooms(
     ):
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
-    return h.rooms
+    return h.rooms if h else None
 
 
 @hospitalsR.post('/') 

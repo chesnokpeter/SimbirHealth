@@ -1,29 +1,28 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator, ValidationError
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from datetime import datetime, timedelta
 
-class TimetableCreateRequest(BaseModel):
+class TimetableCreate(BaseModel):
     hospitalId: int = Field(gt=0)
     doctorId: int = Field(gt=0)
-    from_dt: datetime
-    to_dt: datetime
+    from_dt: datetime = Field(alias='from')
+    to_dt: datetime = Field(alias='to')
     room: str
     
-    model_config = ConfigDict(from_attributes=True, extra="forbid")
 
     @field_validator('from_dt', 'to_dt')
     def validate_time_format(cls, value: datetime):
         if value.minute % 30 != 0 or value.second != 0 or value.microsecond != 0:
-            raise ValueError("Время должно быть кратно 30 минутам, секунды и микросекунды должны быть равны 0.")
+            raise ValueError("время должно быть кратно 30 минутам, секунды и миллисекунды должны быть равны 0")
         return value
 
     @field_validator('to_dt')
-    def validate_time_difference(cls, to_dt: datetime, values):
+    def validate_time_difference(cls, to_dt: datetime, values: dict):
         from_dt = values.get('from_dt')
         if from_dt and to_dt <= from_dt:
             raise ValueError('"to" должно быть больше "from"')
         
         if from_dt and (to_dt - from_dt) > timedelta(hours=12):
-            raise ValueError('Разница между "to" и "from" не должна превышать 12 часов')
+            raise ValueError('разница между "to" и "from" не должна превышать 12 часов')
         return to_dt
 
     class Config:

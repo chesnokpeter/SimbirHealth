@@ -51,6 +51,8 @@ class ACCOUNT(Base, DbAbsTable):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
+    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="doctor")
+
     def model(self):
         return AccountModel(
             id=self.id,
@@ -91,6 +93,8 @@ class HOSPITAL(Base, DbAbsTable):
     rooms: Mapped[list[str]] = mapped_column(ARRAY(String()), nullable=False)
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
+
+    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="hospital")
 
     def model(self):
         return HospitalModel(

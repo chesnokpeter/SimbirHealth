@@ -7,6 +7,10 @@ class SignUpSch(BaseModel):
     username: str
     password: str
 
+
+class AdminCreate(SignUpSch):
+    roles: list[Roles]
+
 class SignInSch(BaseModel):
     username: str
     password: str
@@ -19,6 +23,3 @@ class UpdateSch(BaseModel):
     lastName: str
     firstName: str
     password: str
-
-class AdminCreate(SignUpSch):
-    roles: list[Roles]

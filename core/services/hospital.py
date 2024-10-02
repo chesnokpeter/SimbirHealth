@@ -1,17 +1,12 @@
-from typing import Annotated, TypeAlias
 from core.exceptions import HospitalException
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
 from core.services.abstract import AbsService
-from core.uow import BaseUnitOfWork, UnitOfWork, uowaccess
+from core.uow import uowaccess
 
-UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 
 class HospitalService(AbsService):
-    def __init__(self, uow: UnitOfWork):
-        self.uow = uow
-
     @uowaccess('hospital')
     async def create(self, data: CreateHospital) -> HospitalModel:
         async with self.uow:

@@ -2,7 +2,8 @@ from typing import Any, Generic, Type, TypeAlias, TypeVar
 
 from core.models.abstract import (
     AbsModel,
-    DbAbsModel, MemoryAbsModel
+    DbAbsModel,
+    RestAPIAbsModel
 )
 
 AbsSession: TypeAlias = Any
@@ -43,14 +44,8 @@ class DbAbsRepo(AbsRepo[TSESSION]):
         raise NotImplementedError
 
 
-class MemoryAbsRepo(AbsRepo[TSESSION]):
-    model: MemoryAbsModel
+class RestAPIAbsRepo(AbsRepo[TSESSION]):
+    model: RestAPIAbsModel
 
-    def get(self):
-        raise NotImplementedError
-
-    def add(self):
-        raise NotImplementedError
-
-    def delete(self):
+    async def get_one(self):
         raise NotImplementedError

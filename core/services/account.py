@@ -1,18 +1,13 @@
-from typing import Annotated, TypeAlias
 from core.enums import Roles
 from core.exceptions import AccountException
 from core.models.account import AccountModel
 from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, AdminCreate
 from core.services.abstract import AbsService
-from core.uow import BaseUnitOfWork, UnitOfWork, uowaccess
+from core.uow import uowaccess
 
-UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
 
 
 class AccountService(AbsService):
-    def __init__(self, uow: UnitOfWork):
-        self.uow = uow
-
     @uowaccess('account')
     async def signup(self, data: SignUpSch) -> AccountModel:
         async with self.uow:

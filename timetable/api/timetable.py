@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Security, Body, Query
 # from core.exceptions import AccountException
 # from account.schemas import AccessSch, AccessRefreshSch
 
-timetableR = APIRouter(prefix='/Accounts', tags=['Accounts'])
+timetableR = APIRouter(prefix='/Timetable', tags=['Timetable'])
 
 
 @timetableR.post('/')

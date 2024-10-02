@@ -7,7 +7,6 @@ from fastapi.exceptions import  HTTPException
 from core.config import postgres_url, secret_key, redis_port, redis_host
 
 from core.infra.postgresql import PostgresConnector
-from core.infra.redis import RedisConnector
 from core.repos.abstract import AbsRepo
 from core.repos.account import AccountRepo
 from core.repos.lostoken import LostokenRepo
@@ -37,7 +36,6 @@ def tokenSecure(token: str) -> dict:
 
 
 postgres = PostgresConnector(postgres_url)
-redis = RedisConnector(redis_host, redis_port)
 
 connectors = [postgres]
 

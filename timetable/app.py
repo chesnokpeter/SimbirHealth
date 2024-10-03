@@ -6,7 +6,7 @@ from core.exceptions import RestExceptions
 
 from timetable.api.timetable import timetableR
 
-app = FastAPI(title='SimbirHealth account')
+app = FastAPI(title='SimbirHealth timetable')
 
 origins = ['*']
 

@@ -11,19 +11,20 @@ from core.repos.timetable import TimetableRepo
 from core.exceptions import RestExceptions
 from core.uow import UnitOfWork
 from timetable.repos import RestDoctorRepo, RestRoomsRepo
+from timetable.connectors import RestAPIConnector
 
 import httpx
 
 
 postgres = PostgresConnector(postgres_url)
+restapi = RestAPIConnector(base_url='http://127.0.0.1:')
 
-connectors = [postgres]
+connectors = [postgres, restapi]
 
 timetable = TimetableRepo()
-accounts = RestDoctorRepo('restapi')
-hospital = RestRoomsRepo('restapi')
 
 def uowdep(*repos: AbsRepo):
+    print(list(i.reponame for i in repos))
     connectors_name = {i.require_connector for i in repos}
     connectors_done = [i for i in connectors if i.connector_name in connectors_name]
     return lambda: UnitOfWork(repos, connectors_done)
@@ -49,3 +50,9 @@ async def introspection(token: str) -> AccountModel:
             u = AccountModel(**r)
             return u
         except: raise RestExceptions('invalid jwt token')
+
+def get_accrepo(token: str):
+    return RestDoctorRepo('restapi', token)
+
+def get_hosrepo(token: str):
+    return RestRoomsRepo('restapi', token)

@@ -1,15 +1,25 @@
 from fastapi import APIRouter, Depends, Security, Body, Query
 
-# from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, AdminCreate
-# from core.services.account import AccountService
-# from core.models.account import AccountModel
-# from core.enums import Roles
-# from core.exceptions import AccountException
-# from account.schemas import AccessSch, AccessRefreshSch
+from core.services.timetable import TimetableService
+from core.schemas.timetable import TimetableCreate
+
+from timetable.depends import (
+    timetable, 
+    get_accrepo,
+    get_hosrepo, 
+    uowdep,
+    get_token, 
+    introspection
+)
 
 timetableR = APIRouter(prefix='/Timetable', tags=['Timetable'])
 
 
 @timetableR.post('/')
-async def new_timetable():
-    return
+async def new_timetable(
+    data: TimetableCreate, token=Security(get_token), tt=timetable
+):
+    await introspection(token)
+    uow=uowdep(tt, get_accrepo(token), get_hosrepo(token))()
+    t = await TimetableService(uow).create(data)
+    return t

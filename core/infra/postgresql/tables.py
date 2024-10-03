@@ -118,8 +118,8 @@ class TIMETABLE(Base, DbAbsTable):
     )
     hospital_id: Mapped[int] = mapped_column(Integer(), ForeignKey('hospitals.id'), nullable=False)
     doctor_id: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
-    from_time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
-    to_time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    from_dt: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    to_dt: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
     room: Mapped[str] = mapped_column(String(), nullable=False)
     
     hospital = relationship('HOSPITAL', back_populates='timetables')
@@ -131,8 +131,8 @@ class TIMETABLE(Base, DbAbsTable):
             id = self.id,
             hospital_id = self.hospital_id,
             doctor_id = self.doctor_id,
-            from_time = self.from_time,
-            to_time = self.to_time,
+            from_time = self.from_dt,
+            to_time = self.to_dt,
             room = self.room,
             appointments = self.appointments,
         )

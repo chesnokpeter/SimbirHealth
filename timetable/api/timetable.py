@@ -9,7 +9,8 @@ from timetable.depends import (
     get_hosrepo, 
     uowdep,
     get_token, 
-    introspection
+    introspection,
+    get_timetrepo
 )
 
 timetableR = APIRouter(prefix='/Timetable', tags=['Timetable'])
@@ -17,7 +18,7 @@ timetableR = APIRouter(prefix='/Timetable', tags=['Timetable'])
 
 @timetableR.post('/')
 async def new_timetable(
-    data: TimetableCreate, token=Security(get_token), tt=timetable
+    data: TimetableCreate, token=Security(get_token), tt=Depends(get_timetrepo)
 ):
     await introspection(token)
     uow=uowdep(tt, get_accrepo(token), get_hosrepo(token))()

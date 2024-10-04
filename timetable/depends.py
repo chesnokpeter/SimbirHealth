@@ -23,8 +23,9 @@ connectors = [postgres, restapi]
 
 timetable = TimetableRepo()
 
+def get_timetrepo(): return timetable
+
 def uowdep(*repos: AbsRepo):
-    print(list(i.reponame for i in repos))
     connectors_name = {i.require_connector for i in repos}
     connectors_done = [i for i in connectors if i.connector_name in connectors_name]
     return lambda: UnitOfWork(repos, connectors_done)

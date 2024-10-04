@@ -51,7 +51,7 @@ class ACCOUNT(Base, DbAbsTable):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
-    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="doctor")
+    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="doctor", lazy="selectin")
 
     def model(self):
         return AccountModel(
@@ -94,7 +94,7 @@ class HOSPITAL(Base, DbAbsTable):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
-    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="hospital")
+    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="hospital", lazy="selectin")
 
     def model(self):
         return HospitalModel(
@@ -122,9 +122,9 @@ class TIMETABLE(Base, DbAbsTable):
     to_dt: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
     room: Mapped[str] = mapped_column(String(), nullable=False)
     
-    hospital = relationship('HOSPITAL', back_populates='timetables')
-    doctor = relationship('ACCOUNT', back_populates='timetables')
-    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable")
+    hospital = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")
+    doctor = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
+    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable", lazy="selectin")
     
     def model(self):
         return TimetableModel(
@@ -148,7 +148,7 @@ class APPOINTMENT(Base, DbAbsTable):
     )
     timetable_id: Mapped[int] = mapped_column(ForeignKey('timetable.id'), nullable=False)
     time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
-    timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments")
+    timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments", lazy="selectin")
     def model(self):
         return AppoinimentModel(
             id = self.id,

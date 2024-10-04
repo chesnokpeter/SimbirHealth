@@ -44,7 +44,6 @@ class RestRoomsRepo(AbsRepo[RestConnType]):
         auth = BearerAuth(self.token)
         d = await self.session.client.get(f'{self.session.baseurl}8021/api/Hospitals/{id}', auth=auth)
         d = d.json()
-        print(d)
         if not d:
             return None
         return HospitalModel(**d)

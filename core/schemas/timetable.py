@@ -26,9 +26,11 @@ class TimetableCreate(BaseModel):
 
     class Config:
         json_schema_extra = {
-            "doctorId": 7,
-            "from": "2024-04-25T11:30:00Z",
-            "hospitalId": 2,
-            "room": "string",
-            "to": "2024-04-25T12:00:00Z"
+            "example": {
+                "hospitalId": 1,
+                "doctorId": 1,
+                "from": "2024-04-25T11:30:00Z",
+                "to": "2024-04-25T12:00:00Z",
+                "room": "1"
+            }
         }

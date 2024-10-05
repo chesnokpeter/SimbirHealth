@@ -29,8 +29,8 @@ async def new_timetable(
     t = await TimetableService(uow).create(data)
     return t
 
-@timetableR.post('/{id}')
-async def new_timetable(
+@timetableR.put('/{id}')
+async def upd_timetable(
     id: int, data: TimetableCreate, token=Security(get_token), tt=Depends(get_timetrepo)
 ) -> TimetableModel:
     u = await introspection(token)
@@ -38,4 +38,15 @@ async def new_timetable(
         raise AccountException('user not admin or manager')
     uow = uowdep(tt, get_accrepo(token), get_hosrepo(token))()
     t = await TimetableService(uow).update(id, data)
+    return t
+
+@timetableR.delete('/{id}')
+async def del_timetable(
+    id: int, token=Security(get_token), tt=Depends(get_timetrepo)
+) -> TimetableModel:
+    u = await introspection(token)
+    if not Roles.ADMIN or Roles.MANAGER in u.roles:
+        raise AccountException('user not admin or manager')
+    uow = uowdep(tt, get_accrepo(token), get_hosrepo(token))()
+    t = await TimetableService(uow).delete(id)
     return t

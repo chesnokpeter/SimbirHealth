@@ -59,6 +59,11 @@ class TimetableService(AbsService):
             return t.model()
         
     @uowaccess('timetable')
-    async def delete(self, id: int) -> TimetableModel:
+    async def delete(self, id: int) -> None:
         async with self.uow:
-            ...
+            t = await self.uow.timetable.get_one(id=id)
+            if not t:
+                raise TimetableException('timetable not found')
+            
+            await self.uow.timetable.delete(id)
+            return None

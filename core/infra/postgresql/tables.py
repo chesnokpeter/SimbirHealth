@@ -122,8 +122,8 @@ class TIMETABLE(Base, DbAbsTable):
     to_dt: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
     room: Mapped[str] = mapped_column(String(), nullable=False)
     
-    hospital = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")
-    doctor = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
+    hospital: Mapped["HOSPITAL"] = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")
+    doctor: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
     appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable", lazy="selectin")
     
     def model(self):
@@ -146,14 +146,20 @@ class APPOINTMENT(Base, DbAbsTable):
         autoincrement=True,
         nullable=False
     )
-    timetable_id: Mapped[int] = mapped_column(ForeignKey('timetable.id'), nullable=False)
     time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+
+    timetable_id: Mapped[int] = mapped_column(Integer(), ForeignKey('timetable.id'), nullable=False)
+    patient_id: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
+
     timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments", lazy="selectin")
+    patient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
+
     def model(self):
         return AppoinimentModel(
             id = self.id,
+            time = self.time,
             timetable_id = self.timetable_id,
-            time = self.time
+            patient_id = self.patient_id
         )
 
 

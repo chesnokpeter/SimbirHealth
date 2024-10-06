@@ -34,3 +34,7 @@ class TimetableCreate(BaseModel):
                 "room": "1"
             }
         }
+
+
+class AppointmentsCreate(BaseModel):
+    time: datetime

@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from core.exceptions import RestExceptions
 
 from timetable.api.timetable import timetableR
+from timetable.api.appointment import appointmenteR
 
 app = FastAPI(title='SimbirHealth timetable')
 
@@ -21,6 +22,7 @@ app.add_middleware(
 apiRouter = APIRouter(prefix='/api')
 
 apiRouter.include_router(timetableR)
+apiRouter.include_router(appointmenteR)
 
 @app.exception_handler(RestExceptions)
 async def exception_handler(res, exc: RestExceptions):

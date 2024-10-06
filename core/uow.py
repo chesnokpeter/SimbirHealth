@@ -8,6 +8,7 @@ from core.repos.account import AccountRepo
 from core.repos.lostoken import LostokenRepo
 from core.repos.hospital import HospitalRepo
 from core.repos.timetable import TimetableRepo
+from core.repos.appointment import AppointmentRepo
 
 
 class AbsUnitOfWork(ABC):
@@ -70,6 +71,7 @@ class BaseUnitOfWork(AbsUnitOfWork, ABC):
     lostoken: LostokenRepo | RestAPIAbsRepo
     hospital: HospitalRepo | RestAPIAbsRepo
     timetable: TimetableRepo | RestAPIAbsRepo
+    appointment: AppointmentRepo | RestAPIAbsRepo
 
 
 

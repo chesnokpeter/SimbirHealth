@@ -52,6 +52,7 @@ class ACCOUNT(Base, DbAbsTable):
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
     timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="doctor", lazy="selectin")
+    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="patient", lazy="selectin")
 
     def model(self):
         return AccountModel(
@@ -124,7 +125,7 @@ class TIMETABLE(Base, DbAbsTable):
     
     hospital: Mapped["HOSPITAL"] = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")
     doctor: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
-    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable", lazy="selectin")
+    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="timetable", lazy="selectin", cascade="all, delete-orphan")
     
     def model(self):
         return TimetableModel(
@@ -148,11 +149,11 @@ class APPOINTMENT(Base, DbAbsTable):
     )
     time: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
 
-    timetable_id: Mapped[int] = mapped_column(Integer(), ForeignKey('timetable.id'), nullable=False)
+    timetable_id: Mapped[int] = mapped_column(Integer(), ForeignKey('timetable.id', ondelete='CASCADE'), nullable=False)
     patient_id: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
 
     timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments", lazy="selectin")
-    patient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='timetables', lazy="selectin")
+    patient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
 
     def model(self):
         return AppoinimentModel(

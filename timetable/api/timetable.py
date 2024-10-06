@@ -34,7 +34,7 @@ async def new_timetable(
     t = await TimetableService(uow).create(data)
     return t
 
-@timetableR.put('/{id}') #! ПРОТЕСТИРОВАТЬ
+@timetableR.put('/{id}') 
 async def upd_timetable(
     id: int, data: TimetableCreate, token=Security(get_token), tt=Depends(get_timetrepo)
 ) -> TimetableModel:
@@ -82,14 +82,32 @@ async def del_from_hospital(
 
 @timetableR.get("/Hospital/{id}")
 async def get_timetable_from_hospital(
-    id: int, to: datetime, from_: datetime = Query(alias='from'), token=Security(get_token), tt=Depends(get_timetrepo), at=Depends(get_apporepo)
+    id: int, to: datetime, from_: datetime = Query(alias='from'), token=Security(get_token), tt=Depends(get_timetrepo)
 ) -> list[TimetableModel]:
     u = await introspection(token)
-    uow = uowdep(tt, at)()
+    uow = uowdep(tt)()
     t = await TimetableService(uow).timetable_from_hospital(id, to, from_)
     return t
 
+@timetableR.get("/Doctor/{id}")
+async def get_timetable_from_doctor(
+    id: int, to: datetime, from_: datetime = Query(alias='from'), token=Security(get_token), tt=Depends(get_timetrepo)
+) -> list[TimetableModel]:
+    u = await introspection(token)
+    uow = uowdep(tt)()
+    t = await TimetableService(uow).timetable_from_doctor(id, to, from_)
+    return t
 
+@timetableR.get("/Hospital/{id}/Room/{room}")
+async def get_timetable_from_hospital_room(
+    id: int, room: str, to: datetime, from_: datetime = Query(alias='from'), token=Security(get_token), tt=Depends(get_timetrepo)
+) -> list[TimetableModel]:
+    u = await introspection(token)
+    if not (Roles.ADMIN or Roles.MANAGER or Roles.DOCTOR in u.roles):
+        raise AccountException('user not admin or manager or doctor')
+    uow = uowdep(tt)()
+    t = await TimetableService(uow).timetable_from_room(id, room, to, from_)
+    return t
 
 @timetableR.post("/{id}/Appointments")
 async def create_appointments(

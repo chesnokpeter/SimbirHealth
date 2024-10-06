@@ -196,6 +196,17 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_by_time_range(from_, to, doctor_id=doctor_id)
             if not t:
-                raise TimetableException('hospital timetable not found for this range')
+                raise TimetableException('doctor timetable not found for this range')
+
+            return [timetable.model() for timetable in t]
+        
+
+
+    @uowaccess('timetable')
+    async def timetable_from_room(self, hospital_id: int, room: str, to: datetime, from_: datetime) -> list[TimetableModel]:
+        async with self.uow:
+            t = await self.uow.timetable.get_by_time_range(from_, to, hospital_id=hospital_id, room=room)
+            if not t:
+                raise TimetableException('hospital room timetable not found for this range')
 
             return [timetable.model() for timetable in t]

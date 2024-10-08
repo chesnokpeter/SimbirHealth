@@ -164,3 +164,23 @@ class APPOINTMENT(Base, DbAbsTable):
         )
 
 
+
+class HISTORY(Base, DbAbsTable):
+    __tablename__ = 'history'
+    id: Mapped[int] = mapped_column(
+        Integer(),
+        primary_key=True,
+        autoincrement=True,
+        nullable=False
+    )
+    date: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
+    pacientId: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
+    hospitalId: Mapped[int] = mapped_column(Integer(), ForeignKey('hospitals.id'), nullable=False)
+    doctorId: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
+
+    room: Mapped[str] = mapped_column(String(), nullable=False)
+    data: Mapped[str] = mapped_column(String(), nullable=False)
+
+    timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments", lazy="selectin")
+    patient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
+

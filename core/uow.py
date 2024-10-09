@@ -9,6 +9,7 @@ from core.repos.lostoken import LostokenRepo
 from core.repos.hospital import HospitalRepo
 from core.repos.timetable import TimetableRepo
 from core.repos.appointment import AppointmentRepo
+from core.repos.history import HistoryRepo
 
 
 class AbsUnitOfWork(ABC):
@@ -66,12 +67,13 @@ class UnitOfWork(AbsUnitOfWork):
             await c.rollback()
 
 
-class BaseUnitOfWork(AbsUnitOfWork, ABC):
+class AllReposUnitOfWork(AbsUnitOfWork, ABC):
     account: AccountRepo | RestAPIAbsRepo
     lostoken: LostokenRepo | RestAPIAbsRepo
     hospital: HospitalRepo | RestAPIAbsRepo
     timetable: TimetableRepo | RestAPIAbsRepo
     appointment: AppointmentRepo | RestAPIAbsRepo
+    history: HistoryRepo | RestAPIAbsRepo
 
 
 

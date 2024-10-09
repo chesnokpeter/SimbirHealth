@@ -7,7 +7,7 @@ from core.config import postgres_url
 from core.models.account import AccountModel
 from core.infra.postgresql import PostgresConnector
 from core.repos.abstract import AbsRepo
-from core.repos.timetable import TimetableRepo
+from core.repos.history import HistoryRepo
 from core.repos.appointment import AppointmentRepo
 from core.exceptions import RestExceptions
 from core.uow import UnitOfWork
@@ -22,12 +22,10 @@ restapi = RestAPIConnector(base_url='http://127.0.0.1:')
 
 connectors = [postgres, restapi]
 
-timetable = TimetableRepo()
+history = HistoryRepo()
 
-appointment = AppointmentRepo()
 
-def get_timetrepo(): return timetable
-def get_apporepo(): return appointment
+def get_hisrepo(): return history
 
 def uowdep(*repos: AbsRepo):
     connectors_name = {i.require_connector for i in repos}

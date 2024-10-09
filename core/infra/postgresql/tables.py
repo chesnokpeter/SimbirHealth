@@ -181,6 +181,6 @@ class HISTORY(Base, DbAbsTable):
     room: Mapped[str] = mapped_column(String(), nullable=False)
     data: Mapped[str] = mapped_column(String(), nullable=False)
 
-    timetable: Mapped["TIMETABLE"] = relationship("TIMETABLE", back_populates="appointments", lazy="selectin")
-    patient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
-
+    pacient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
+    doctor: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
+    hospital: Mapped["HOSPITAL"] = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")

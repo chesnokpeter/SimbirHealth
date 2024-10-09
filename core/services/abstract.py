@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Annotated, TypeAlias
-from core.uow import UnitOfWork, BaseUnitOfWork
+from core.uow import UnitOfWork, AllReposUnitOfWork
 
-UnitOfWork: TypeAlias = Annotated[BaseUnitOfWork, UnitOfWork]
+UnitOfWork: TypeAlias = Annotated[AllReposUnitOfWork, UnitOfWork]
 
 
 class AbsService(ABC):

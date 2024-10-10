@@ -18,7 +18,7 @@ from document.depends import (
 historyR = APIRouter(prefix='/history', tags=['History'])
 
 
-@historyR.delete('/{id}')
+@historyR.post('/')
 async def create_history(
     data: CreateHistory, token=Security(get_token), ht=Depends(get_hisrepo)
 ) -> HistoryModel:
@@ -27,4 +27,15 @@ async def create_history(
         raise AccountException('user not admin or manager or doctor')
     uow = uowdep(ht, get_accrepo(token), get_hosrepo(token))()
     h = await DocumentService(uow).create(data)
+    return h
+
+@historyR.put('/{id}')
+async def upd_history(
+    id: int, data: CreateHistory, token=Security(get_token), ht=Depends(get_hisrepo)
+) -> HistoryModel:
+    u = await introspection(token)
+    if not (Roles.ADMIN in u or Roles.MANAGER in u or Roles.DOCTOR):
+        raise AccountException('user not admin or manager or doctor')
+    uow = uowdep(ht, get_accrepo(token), get_hosrepo(token))()
+    h = await DocumentService(uow).update(id, data)
     return h

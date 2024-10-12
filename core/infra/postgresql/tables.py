@@ -1,7 +1,3 @@
-from datetime import date as datetype
-from datetime import datetime
-from datetime import time as timetype
-
 from sqlalchemy import (
     BigInteger,
     Date,
@@ -24,6 +20,7 @@ from core.models.account import AccountModel
 from core.models.hospital import HospitalModel
 from core.models.timetable import TimetableModel
 from core.models.appoiniment import AppoinimentModel
+from core.models.history import HistoryModel
 
 class Base(DeclarativeBase):
     def __repr__(self):
@@ -51,8 +48,31 @@ class ACCOUNT(Base, DbAbsTable):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
-    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="doctor", lazy="selectin")
-    appointments: Mapped[list["APPOINTMENT"]] = relationship("APPOINTMENT", back_populates="patient", lazy="selectin")
+    timetables: Mapped[list["TIMETABLE"]] = relationship(
+        "TIMETABLE", 
+        back_populates="doctor", 
+        lazy="selectin"
+    )
+    
+    appointments: Mapped[list["APPOINTMENT"]] = relationship(
+        "APPOINTMENT", 
+        back_populates="patient", 
+        lazy="selectin"
+    )
+    
+    history_as_patient: Mapped[list["HISTORY"]] = relationship(
+        "HISTORY", 
+        foreign_keys="HISTORY.pacientId", 
+        back_populates="pacient", 
+        lazy="selectin"
+    )
+    
+    history_as_doctor: Mapped[list["HISTORY"]] = relationship(
+        "HISTORY", 
+        foreign_keys="HISTORY.doctorId", 
+        back_populates="doctor", 
+        lazy="selectin"
+    )
 
     def model(self):
         return AccountModel(
@@ -63,7 +83,6 @@ class ACCOUNT(Base, DbAbsTable):
             password=self.password,
             roles=self.roles,
         )
-
 class LASTOKEN(Base, DbAbsTable):
     __tablename__ = 'lastoken'
     id: Mapped[int] = mapped_column(
@@ -95,7 +114,17 @@ class HOSPITAL(Base, DbAbsTable):
 
     is_deleted: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
 
-    timetables: Mapped[list["TIMETABLE"]] = relationship("TIMETABLE", back_populates="hospital", lazy="selectin")
+    timetables: Mapped[list["TIMETABLE"]] = relationship(
+        "TIMETABLE", 
+        back_populates="hospital", 
+        lazy="selectin"
+    )
+    
+    history: Mapped[list["HISTORY"]] = relationship(
+        "HISTORY", 
+        back_populates="hospital", 
+        lazy="selectin"
+    )
 
     def model(self):
         return HospitalModel(
@@ -105,7 +134,6 @@ class HOSPITAL(Base, DbAbsTable):
             contactPhone=self.contactPhone,
             rooms=self.rooms,
         )
-    
 
 class TIMETABLE(Base, DbAbsTable):
     __tablename__ = 'timetable'
@@ -163,10 +191,9 @@ class APPOINTMENT(Base, DbAbsTable):
             patient_id = self.patient_id
         )
 
-
-
 class HISTORY(Base, DbAbsTable):
     __tablename__ = 'history'
+    
     id: Mapped[int] = mapped_column(
         Integer(),
         primary_key=True,
@@ -174,13 +201,54 @@ class HISTORY(Base, DbAbsTable):
         nullable=False
     )
     date: Mapped[DateTime] = mapped_column(DateTime(), nullable=False)
-    pacientId: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
-    hospitalId: Mapped[int] = mapped_column(Integer(), ForeignKey('hospitals.id'), nullable=False)
-    doctorId: Mapped[int] = mapped_column(Integer(), ForeignKey('account.id'), nullable=False)
-
+    
+    pacientId: Mapped[int] = mapped_column(
+        Integer(), 
+        ForeignKey('account.id'), 
+        nullable=False
+    )
+    
+    hospitalId: Mapped[int] = mapped_column(
+        Integer(), 
+        ForeignKey('hospitals.id'), 
+        nullable=False
+    )
+    
+    doctorId: Mapped[int] = mapped_column(
+        Integer(), 
+        ForeignKey('account.id'), 
+        nullable=False
+    )
     room: Mapped[str] = mapped_column(String(), nullable=False)
     data: Mapped[str] = mapped_column(String(), nullable=False)
 
-    pacient: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
-    doctor: Mapped["ACCOUNT"] = relationship('ACCOUNT', back_populates='appointments', lazy="selectin")
-    hospital: Mapped["HOSPITAL"] = relationship('HOSPITAL', back_populates='timetables', lazy="selectin")
+    pacient: Mapped["ACCOUNT"] = relationship(
+        "ACCOUNT", 
+        foreign_keys=[pacientId],
+        back_populates="history_as_patient", 
+        lazy="selectin"
+    )
+
+    doctor: Mapped["ACCOUNT"] = relationship(
+        "ACCOUNT", 
+        foreign_keys=[doctorId], 
+        back_populates="history_as_doctor", 
+        lazy="selectin"
+    )
+
+    hospital: Mapped["HOSPITAL"] = relationship(
+        "HOSPITAL", 
+        back_populates="history", 
+        lazy="selectin"
+    )
+
+    def model(self):
+        return HistoryModel(
+            id=self.id,
+            date=self.date,
+            pacientId=self.pacientId,
+            hospitalId=self.hospitalId,
+            doctorId=self.doctorId,
+            room=self.room,
+            data=self.data
+        )

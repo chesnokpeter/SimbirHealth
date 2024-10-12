@@ -1,4 +1,4 @@
-.PHONY: account hospital timetable
+.PHONY: account hospital timetable, document
 
 account: 
 	uvicorn account.app:app --reload --port 8011
@@ -8,3 +8,6 @@ hospital:
 
 timetable:
 	uvicorn timetable.app:app --reload --port 8031
+
+document:
+	uvicorn document.app:app --reload --port 8041

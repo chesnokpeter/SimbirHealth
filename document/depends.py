@@ -11,8 +11,8 @@ from core.repos.history import HistoryRepo
 from core.repos.appointment import AppointmentRepo
 from core.exceptions import RestExceptions
 from core.uow import UnitOfWork
-from timetable.customrepos import RestDoctorRepo, RestRoomsRepo
-from timetable.customconnectors import RestAPIConnector
+from document.customrepos import RestDoctorRepo, RestHospitalRepo, RestUserRepo
+from document.customconnectors import RestAPIConnector
 
 import httpx
 
@@ -55,7 +55,7 @@ async def introspection(token: str) -> AccountModel:
         except: raise RestExceptions('invalid jwt token')
 
 def get_accrepo(token: str):
-    return RestDoctorRepo('restapi', token)
+    return RestUserRepo('restapi', token)
 
 def get_hosrepo(token: str):
-    return RestRoomsRepo('restapi', token)
+    return RestHospitalRepo('restapi', token)

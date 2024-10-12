@@ -51,6 +51,15 @@ async def admin_get_accounts(
     return u
 
 
+@accountsR.get('/{id}')
+async def get_account(
+        id: int, token=Security(get_token), uow=Depends(uowdep(account))
+    ) -> AccountModel| None:
+    access = tokenSecure(token)
+    u = await AccountService(uow).me(id) 
+    return u
+
+
 @accountsR.post('/')
 async def admin_create(
         data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))

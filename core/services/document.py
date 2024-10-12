@@ -28,7 +28,9 @@ class DocumentService(AbsService):
             if not data.room in h.rooms:
                 raise HospitalException('no room at the hospital')
 
-            h = await self.uow.history.add(**data.model_dump())
+            date = data.date.replace(tzinfo=None)
+
+            h = await self.uow.history.add(**data.model_dump(exclude=['date']), date=date)
             await self.uow.commit()
             return h.model()
 

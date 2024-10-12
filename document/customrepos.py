@@ -32,7 +32,25 @@ class RestDoctorRepo(AbsRepo[RestConnType]):
 
 
 
-class RestRoomsRepo(AbsRepo[RestConnType]):
+class RestUserRepo(AbsRepo[RestConnType]):
+    model: AccountModel
+    reponame = 'account'
+
+    def __init__(self, require_connector: str, token: str):
+        super().__init__(require_connector)
+        self.token = token
+
+    async def get_one(self, id: int) -> AccountModel | None:
+        auth = BearerAuth(self.token)
+        d = await self.session.client.get(f'{self.session.baseurl}8011/api/Accounts/{id}', auth=auth)
+        d = d.json()
+        if not d:
+            return None
+        return AccountModel(**d)
+
+
+
+class RestHospitalRepo(AbsRepo[RestConnType]):
     model: HospitalModel
     reponame = 'hospital'
 

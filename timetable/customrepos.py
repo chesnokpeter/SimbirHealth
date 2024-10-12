@@ -26,7 +26,7 @@ class RestDoctorRepo(AbsRepo[RestConnType]):
         auth = BearerAuth(self.token)
         d = await self.session.client.get(f'{self.session.baseurl}8011/api/Doctors/{id}', auth=auth)
         d = d.json()
-        if not d:
+        if not d or d.get('error'):
             return None
         return AccountModel(**d)
 
@@ -44,7 +44,7 @@ class RestRoomsRepo(AbsRepo[RestConnType]):
         auth = BearerAuth(self.token)
         d = await self.session.client.get(f'{self.session.baseurl}8021/api/Hospitals/{id}', auth=auth)
         d = d.json()
-        if not d:
+        if not d or d.get('error'):
             return None
         return HospitalModel(**d)
     

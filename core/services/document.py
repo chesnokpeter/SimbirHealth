@@ -56,7 +56,26 @@ class DocumentService(AbsService):
             if not data.room in h.rooms:
                 raise HospitalException('no room at the hospital')
 
-            h = await self.uow.history.update(id=id, **data.model_dump())
+            date = data.date.replace(tzinfo=None)
+
+            h = await self.uow.history.update(id=id, **data.model_dump(exclude=['date']), date=date)
             await self.uow.commit()
             return h.model()
+
+
+
+
+    @uowaccess('history')
+    async def history_pacient(self, id: int) -> list[HistoryModel] | None:
+        async with self.uow:
+            h = await self.uow.history.get(pacientId=id)
+            return [i.model() for i in h]
+
+
+
+    @uowaccess('history')
+    async def get_history(self, id: int) -> HistoryModel | None:
+        async with self.uow:
+            h = await self.uow.history.get_one(id=id)
+            return h.model() if h else None
 

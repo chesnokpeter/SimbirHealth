@@ -1,0 +1,89 @@
+services:
+  timetable:
+    build:
+      context: .
+      dockerfile: ./timetable/Dockerfile
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_URL: ${POSTGRES_URL}
+    ports:
+      - "8031:8031"
+    depends_on:
+      - db_init
+    networks:
+      - appnetwork
+
+  account:
+    build:
+      context: .
+      dockerfile: ./account/Dockerfile
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_URL: ${POSTGRES_URL}
+    ports:
+      - "8011:8011"
+    depends_on:
+      - db_init
+    networks:
+      - appnetwork
+
+  hospital:
+    build:
+      context: .
+      dockerfile: ./hospital/Dockerfile
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_URL: ${POSTGRES_URL}
+    ports:
+      - "8021:8021"
+    depends_on:
+      - db_init
+    networks:
+      - appnetwork
+
+  document:
+    build:
+      context: .
+      dockerfile: ./document/Dockerfile
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      POSTGRES_URL: ${POSTGRES_URL}
+    ports:
+      - "8041:8041"
+    depends_on:
+      - db_init
+    networks:
+      - appnetwork
+
+  database:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: psql
+      POSTGRES_DB: SimbirHealth
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - appnetwork
+    ports:
+      - "5433:5432"
+
+  db_init:
+    build:
+      context: .
+      dockerfile: ./db_init/Dockerfile
+    environment:
+      POSTGRES_URL: postgresql+asyncpg://postgres:psql@database:5432/SimbirHealth
+    depends_on:
+      - database
+    networks:
+      - appnetwork
+
+
+
+networks:
+  appnetwork:
+    driver: bridge
+
+volumes:
+  postgres-data:

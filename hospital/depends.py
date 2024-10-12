@@ -2,7 +2,7 @@ from fastapi import Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.exceptions import  HTTPException
 
-from core.config import postgres_url, redis_port, redis_host
+from core.config import postgres_url
 
 from core.models.account import AccountModel
 from core.infra.postgresql import PostgresConnector

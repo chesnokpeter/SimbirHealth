@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security
 
 from core.services.document import DocumentService
 from core.exceptions import AccountException

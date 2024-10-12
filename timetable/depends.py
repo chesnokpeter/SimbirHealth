@@ -18,9 +18,10 @@ import httpx
 
 
 postgres = PostgresConnector(postgres_url)
-restapi = RestAPIConnector(base_url='http://127.0.0.1:')
+restapiaccount = RestAPIConnector(base_url='http://account:', connector_name='restapiaccount')
+restapihospital = RestAPIConnector(base_url='http://hospital:', connector_name='restapihospital')
 
-connectors = [postgres, restapi]
+connectors = [postgres, restapiaccount]
 
 timetable = TimetableRepo()
 
@@ -48,7 +49,7 @@ def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
 
 async def introspection(token: str) -> AccountModel:
     async with httpx.AsyncClient() as client:
-        r = await client.get('http://localhost:8011/api/Authentication/Validate', params={'accessToken':token})
+        r = await client.get('http://account:8011/api/Authentication/Validate', params={'accessToken':token})
         r = r.json()
         if r.get('error'): raise RestExceptions('invalid jwt token')
         try:
@@ -57,7 +58,7 @@ async def introspection(token: str) -> AccountModel:
         except: raise RestExceptions('invalid jwt token')
 
 def get_accrepo(token: str):
-    return RestDoctorRepo('restapi', token)
+    return RestDoctorRepo('restapiaccount', token)
 
 def get_hosrepo(token: str):
-    return RestRoomsRepo('restapi', token)
+    return RestRoomsRepo('restapihospital', token)

@@ -8,8 +8,9 @@ class RestAPIConnector(AbsConnector):
     def clientret(self):
         return httpx.AsyncClient()
 
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, connector_name:str):
         self.base_url = base_url
+        self.connector_name = connector_name
 
     async def connect(self):
         client = self.clientret()

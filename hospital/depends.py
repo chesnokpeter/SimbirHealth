@@ -40,7 +40,7 @@ def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
 
 async def introspection(token: str) -> AccountModel:
     async with httpx.AsyncClient() as client:
-        r = await client.get('http://localhost:8011/api/Authentication/Validate', params={'accessToken':token})
+        r = await client.get('http://account:8011/api/Authentication/Validate', params={'accessToken':token})
         r = r.json()
         if r.get('error'): raise RestExceptions('invalid jwt token')
         try:

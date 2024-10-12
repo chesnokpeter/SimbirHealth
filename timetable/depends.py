@@ -21,7 +21,7 @@ postgres = PostgresConnector(postgres_url)
 restapiaccount = RestAPIConnector(base_url='http://account:', connector_name='restapiaccount')
 restapihospital = RestAPIConnector(base_url='http://hospital:', connector_name='restapihospital')
 
-connectors = [postgres, restapiaccount]
+connectors = [postgres, restapiaccount, restapihospital]
 
 timetable = TimetableRepo()
 

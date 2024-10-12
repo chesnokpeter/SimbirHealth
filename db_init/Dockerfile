@@ -12,7 +12,7 @@ COPY ./db_init /db_init
 COPY ./db_init/db_init.py db_init.py
 COPY ./core /core
 
-ENV POSTGRES_URL='postgresql+asyncpg://postgres:psql@localhost:5433/SimbirHealth'
+ENV POSTGRES_URL='postgresql+asyncpg://postgres:psql@database:5432/SimbirHealth'
 
 
 RUN useradd -m appuser

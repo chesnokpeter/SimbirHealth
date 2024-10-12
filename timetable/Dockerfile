@@ -12,7 +12,7 @@ COPY ./timetable /timetable
 COPY ./core /core
 
 ENV SECRET_KEY="sdhfh32khkjkhjekhjrk4h5k3hj"
-ENV POSTGRES_URL='postgresql+asyncpg://postgres:psql@localhost:5433/SimbirHealth'
+ENV POSTGRES_URL='postgresql+asyncpg://postgres:psql@database:5432/SimbirHealth'
 
 EXPOSE 8031
 

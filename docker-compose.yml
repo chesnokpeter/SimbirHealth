@@ -73,7 +73,7 @@ services:
       context: .
       dockerfile: ./db_init/Dockerfile
     environment:
-      POSTGRES_URL: postgresql+asyncpg://postgres:psql@database:5432/SimbirHealth
+      POSTGRES_URL: ${POSTGRES_URL}
     depends_on:
       - database
     networks:

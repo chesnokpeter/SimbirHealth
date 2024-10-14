@@ -10,6 +10,8 @@ services:
       - "8031:8031"
     depends_on:
       - db_init
+      - hospital
+      - account
     networks:
       - appnetwork
 
@@ -38,6 +40,7 @@ services:
       - "8021:8021"
     depends_on:
       - db_init
+      - account
     networks:
       - appnetwork
 
@@ -52,6 +55,8 @@ services:
       - "8041:8041"
     depends_on:
       - db_init
+      - hospital
+      - account
     networks:
       - appnetwork
 

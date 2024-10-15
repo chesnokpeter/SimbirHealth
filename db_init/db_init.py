@@ -2,7 +2,7 @@ import os
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from core.infra.postgresql.tables import Base, ACCOUNT
 

@@ -16,7 +16,7 @@ from account.depends import (
     accessCreate,
     refreshCreate,
     tokenSecure,
-    get_token
+    get_token,
 )
 
 
@@ -25,7 +25,7 @@ async def signup(data: SignUpSch, uow=Depends(uowdep(account))) -> AccessRefresh
     user = await AccountService(uow).signup(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
-    return {'accessToken':access, 'refreshToken':refresh}
+    return {'accessToken': access, 'refreshToken': refresh}
 
 
 @authenticationR.post('/SignIn')
@@ -33,21 +33,16 @@ async def signin(data: SignInSch, uow=Depends(uowdep(account))) -> AccessRefresh
     user = await AccountService(uow).signin(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
-    return {'accessToken':access, 'refreshToken':refresh}
+    return {'accessToken': access, 'refreshToken': refresh}
 
 
 @authenticationR.put('/SignOut')
-async def signout(
-        data: SignOutSch,
-        uow=Depends(uowdep(lostoken))
-    ) -> None:
+async def signout(data: SignOutSch, uow=Depends(uowdep(lostoken))) -> None:
     await AccountService(uow).signout(data)
 
 
 @authenticationR.get('/Validate')
-async def validate_token(
-        accessToken: str, uow=Depends(uowdep(account, lostoken))
-    ) -> AccountModel:
+async def validate_token(accessToken: str, uow=Depends(uowdep(account, lostoken))) -> AccountModel:
     access = tokenSecure(accessToken)
     await AccountService(uow).checklostoken(accessToken)
     user = await AccountService(uow).me(int(access['id']))
@@ -56,12 +51,10 @@ async def validate_token(
 
 @authenticationR.post('/Refresh')
 async def refresh_token(
-        refreshToken: str = Body(embed=True), uow=Depends(uowdep(account))
-    ) -> AccessSch:
+    refreshToken: str = Body(embed=True), uow=Depends(uowdep(account))
+) -> AccessSch:
     refresh = tokenSecure(refreshToken)
 
     user = await AccountService(uow).me(int(refresh['id']))
     access = accessCreate({'id': str(user.id)})
-    return {'accessToken':access}
-
-
+    return {'accessToken': access}

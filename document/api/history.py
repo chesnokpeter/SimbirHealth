@@ -6,14 +6,7 @@ from core.schemas.history import CreateHistory
 from core.models.history import HistoryModel
 from core.enums import Roles
 
-from document.depends import (
-    uowdep,
-    get_token, 
-    introspection,
-    get_hisrepo,
-    get_accrepo,
-    get_hosrepo
-)
+from document.depends import uowdep, get_token, introspection, get_hisrepo, get_accrepo, get_hosrepo
 
 historyR = APIRouter(prefix='/History', tags=['History'])
 
@@ -28,6 +21,7 @@ async def create_history(
     uow = uowdep(ht, get_accrepo(token), get_hosrepo(token))()
     h = await DocumentService(uow).create(data)
     return h
+
 
 @historyR.put('/{id}')
 async def upd_history(
@@ -49,10 +43,13 @@ async def get_history_pacient(
     uow = uowdep(ht)()
     h = await DocumentService(uow).history_pacient(id)
     for i in h:
-        if not (Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or i.pacientId == u.id): #Вот здесь добавил чтобы Админы тоже могли смотреть историю
+        if not (
+            Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or i.pacientId == u.id
+        ):  # Вот здесь добавил чтобы Админы тоже могли смотреть историю
             raise AccountException('user not admin or doctor or pacient')
         break
     return h
+
 
 @historyR.get('/{id}')
 async def get_history(
@@ -61,6 +58,8 @@ async def get_history(
     u = await introspection(token)
     uow = uowdep(ht)()
     h = await DocumentService(uow).get_history(id)
-    if not (Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or h.pacientId == u.id): #Вот здесь добавил чтобы Админы тоже могли смотреть историю
+    if not (
+        Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or h.pacientId == u.id
+    ):  # Вот здесь добавил чтобы Админы тоже могли смотреть историю
         raise AccountException('user not admin or doctor or pacient')
     return h

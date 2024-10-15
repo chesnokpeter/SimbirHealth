@@ -2,8 +2,9 @@ from pydantic import BaseModel
 from datetime import datetime
 from core.models.abstract import DbAbsModel
 
+
 class HistoryModel(BaseModel, DbAbsModel):
-    id: int 
+    id: int
     date: datetime
     pacientId: int
     hospitalId: int
@@ -11,4 +12,3 @@ class HistoryModel(BaseModel, DbAbsModel):
 
     room: str
     data: str
-

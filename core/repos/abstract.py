@@ -1,10 +1,6 @@
 from typing import Any, Generic, Type, TypeAlias, TypeVar
 
-from core.models.abstract import (
-    AbsModel,
-    DbAbsModel,
-    RestAPIAbsModel
-)
+from core.models.abstract import AbsModel, DbAbsModel, RestAPIAbsModel
 
 AbsSession: TypeAlias = Any
 

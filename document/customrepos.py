@@ -5,6 +5,7 @@ from core.repos.types import RestConnType
 
 import httpx
 
+
 class BearerAuth(httpx.Auth):
     def __init__(self, token):
         self.token = token
@@ -31,7 +32,6 @@ class RestDoctorRepo(AbsRepo[RestConnType]):
         return AccountModel(**d)
 
 
-
 class RestUserRepo(AbsRepo[RestConnType]):
     model: AccountModel
     reponame = 'account'
@@ -42,12 +42,13 @@ class RestUserRepo(AbsRepo[RestConnType]):
 
     async def get_one(self, id: int) -> AccountModel | None:
         auth = BearerAuth(self.token)
-        d = await self.session.client.get(f'{self.session.baseurl}8011/api/Accounts/{id}', auth=auth)
+        d = await self.session.client.get(
+            f'{self.session.baseurl}8011/api/Accounts/{id}', auth=auth
+        )
         d = d.json()
         if not d or d.get('error'):
             return None
         return AccountModel(**d)
-
 
 
 class RestHospitalRepo(AbsRepo[RestConnType]):
@@ -60,10 +61,10 @@ class RestHospitalRepo(AbsRepo[RestConnType]):
 
     async def get_one(self, id: int) -> HospitalModel | None:
         auth = BearerAuth(self.token)
-        d = await self.session.client.get(f'{self.session.baseurl}8021/api/Hospitals/{id}', auth=auth)
+        d = await self.session.client.get(
+            f'{self.session.baseurl}8021/api/Hospitals/{id}', auth=auth
+        )
         d = d.json()
         if not d or d.get('error'):
             return None
         return HospitalModel(**d)
-    
-    

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class DbAbsTable:
     id: int
 
@@ -36,5 +37,3 @@ class AbsConnector(ABC):
     @abstractmethod
     def session(self):
         raise NotImplementedError
-
-

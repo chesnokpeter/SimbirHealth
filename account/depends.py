@@ -2,7 +2,7 @@ from datetime import timedelta, datetime, timezone
 import jwt
 from fastapi import Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.exceptions import  HTTPException
+from fastapi.exceptions import HTTPException
 
 from core.config import postgres_url, secret_key
 
@@ -15,14 +15,13 @@ from core.uow import UnitOfWork
 from account.exceptions import JWTExceptions
 
 
-
 def accessCreate(payload: dict[str, str]) -> str:
-    payload['exp'] = datetime.now(timezone.utc) + timedelta(hours=1) 
+    payload['exp'] = datetime.now(timezone.utc) + timedelta(hours=1)
     return jwt.encode(payload, secret_key, algorithm='HS256')
 
 
 def refreshCreate(payload: dict[str, str]) -> str:
-    payload['exp'] = datetime.now(timezone.utc) + timedelta(days=7) 
+    payload['exp'] = datetime.now(timezone.utc) + timedelta(days=7)
     return jwt.encode(payload, secret_key, algorithm='HS256')
 
 
@@ -42,6 +41,7 @@ connectors = [postgres]
 account = AccountRepo()
 lostoken = LostokenRepo()
 
+
 def uowdep(*repos: AbsRepo):
     connectors_name = {i.require_connector for i in repos}
     connectors_done = [i for i in connectors if i.connector_name in connectors_name]
@@ -50,12 +50,10 @@ def uowdep(*repos: AbsRepo):
 
 secure = HTTPBearer()
 
+
 def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
-    if credentials.scheme != "Bearer":
-        raise HTTPException(
-            status_code=401,
-            detail="invalid authentication scheme"
-        )
-    
+    if credentials.scheme != 'Bearer':
+        raise HTTPException(status_code=401, detail='invalid authentication scheme')
+
     token = credentials.credentials
     return token

@@ -16,54 +16,57 @@ from account.depends import (
     accessCreate,
     refreshCreate,
     tokenSecure,
-    get_token
+    get_token,
 )
 
 
 @accountsR.get('/Me')
-async def me(
-        token=Security(get_token), uow=Depends(uowdep(account, lostoken))
-    ) -> SignUpSch:
+async def me(token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> SignUpSch:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     user = await AccountService(uow).me(int(access['id']))
     return SignUpSch(**user.model_dump())
 
+
 @accountsR.put('/Update')
 async def update(
-        data: UpdateSch, token=Security(get_token), uow=Depends(uowdep(account, lostoken))
-    ) -> SignUpSch:
+    data: UpdateSch, token=Security(get_token), uow=Depends(uowdep(account, lostoken))
+) -> SignUpSch:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     user = await AccountService(uow).update(int(access['id']), data)
     return SignUpSch(**user.model_dump())
 
+
 @accountsR.get('/')
 async def admin_get_accounts(
-        count: int=100, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account))
-    ) -> list[AccountModel] | None:
+    count: int = 100,
+    from_: int = Query(0, alias='from'),
+    token=Security(get_token),
+    uow=Depends(uowdep(account)),
+) -> list[AccountModel] | None:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
         raise AccountException('user not admin')
-    u = await AccountService(uow).get_all(from_, count) 
+    u = await AccountService(uow).get_all(from_, count)
     return u
 
 
 @accountsR.get('/{id}')
 async def get_account(
-        id: int, token=Security(get_token), uow=Depends(uowdep(account))
-    ) -> AccountModel| None:
+    id: int, token=Security(get_token), uow=Depends(uowdep(account))
+) -> AccountModel | None:
     access = tokenSecure(token)
-    u = await AccountService(uow).me(id) 
+    u = await AccountService(uow).me(id)
     return u
 
 
 @accountsR.post('/')
 async def admin_create(
-        data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
-    ) -> AccessRefreshSch:
+    data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
+) -> AccessRefreshSch:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
@@ -72,12 +75,13 @@ async def admin_create(
     user = await AccountService(uow).admin_create(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
-    return {'accessToken':access, 'refreshToken':refresh}
+    return {'accessToken': access, 'refreshToken': refresh}
+
 
 @accountsR.put('/{id}')
 async def admin_update(
-        id:int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
-    ) -> AccountModel:
+    id: int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
+) -> AccountModel:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
@@ -87,10 +91,8 @@ async def admin_update(
     return user
 
 
-@accountsR.delete('/{id}')   
-async def admin_delete(
-        id:int, token=Security(get_token), uow=Depends(uowdep(account))
-    ):
+@accountsR.delete('/{id}')
+async def admin_delete(id: int, token=Security(get_token), uow=Depends(uowdep(account))) -> None:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
@@ -98,6 +100,3 @@ async def admin_delete(
         raise AccountException('user not admin')
     user = await AccountService(uow).admin_delete(id)
     return user
-
-
-

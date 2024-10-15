@@ -26,6 +26,7 @@ apiRouter.include_router(authenticationR)
 apiRouter.include_router(accountsR)
 apiRouter.include_router(doctorsR)
 
+
 @app.exception_handler(RestExceptions)
 async def exception_handler(res, exc: RestExceptions):
     return JSONResponse({'error': exc.message}, 400)

@@ -7,42 +7,41 @@ from core.services.hospital import HospitalService
 
 hospitalsR = APIRouter(prefix='/Hospitals', tags=['Hospitals'])
 
-from hospital.depends import (
-    uowdep,
-    get_token,
-    introspection,
-    hospital
-)
+from hospital.depends import uowdep, get_token, introspection, hospital
 
-@hospitalsR.get('/') 
+
+@hospitalsR.get('/')
 async def get_hospitals(
-        count: int=100, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(hospital))
-    ):
+    count: int = 100,
+    from_: int = Query(0, alias='from'),
+    token=Security(get_token),
+    uow=Depends(uowdep(hospital)),
+) -> list[HospitalModel] | None:
     await introspection(token)
     h = await HospitalService(uow).get_hospitals(from_, count)
     return h
 
-@hospitalsR.get('/{id}') 
-async def get_hospital(
-        id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
-    ):
+
+@hospitalsR.get('/{id}')
+async def get_hospital(id: int, token=Security(get_token), uow=Depends(uowdep(hospital))):
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h
 
-@hospitalsR.get('/{id}/Rooms') 
+
+@hospitalsR.get('/{id}/Rooms')
 async def get_hospital_rooms(
-        id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
-    ):
+    id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
+) -> HospitalModel | None:
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h.rooms if h else None
 
 
-@hospitalsR.post('/') 
+@hospitalsR.post('/')
 async def create_hospital(
-        data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
-    ) -> HospitalModel:
+    data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
+) -> HospitalModel:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
         raise AccountException('user not admin')
@@ -51,10 +50,10 @@ async def create_hospital(
     return r
 
 
-@hospitalsR.put('/{id}') 
+@hospitalsR.put('/{id}')
 async def update_hospital(
-        id: int, data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
-    ) -> HospitalModel:
+    id: int, data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
+) -> HospitalModel:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
         raise AccountException('user not admin')
@@ -63,10 +62,10 @@ async def update_hospital(
     return r
 
 
-@hospitalsR.delete('/{id}') 
+@hospitalsR.delete('/{id}')
 async def delete_hospital(
-        id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
-    ):
+    id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
+) -> None:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
         raise AccountException('user not admin')

@@ -3,9 +3,11 @@ from core.repos.defaults.postgres import PostgresDefaultRepo
 
 from sqlalchemy import delete, insert, select, update
 
+
 class HospitalRepo(PostgresDefaultRepo[HOSPITAL]):
     model = HOSPITAL
     reponame = 'hospital'
+
     async def get(self, **data) -> list[HOSPITAL] | None:
         result = await self.session.execute(
             select(self.model).order_by(self.model.id.desc()).filter_by(**data)
@@ -27,7 +29,7 @@ class HospitalRepo(PostgresDefaultRepo[HOSPITAL]):
         else:
             result = res
         return result
-    
+
     async def offset(
         self, offset: int = 0, limit: int | None = None, order=None, **data
     ) -> list[HOSPITAL] | None:

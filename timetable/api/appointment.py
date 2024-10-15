@@ -4,20 +4,13 @@ from core.services.timetable import TimetableService
 from core.exceptions import AccountException
 from core.enums import Roles
 
-from timetable.depends import (
-    uowdep,
-    get_token, 
-    introspection,
-    get_apporepo
-)
+from timetable.depends import uowdep, get_token, introspection, get_apporepo
 
 appointmenteR = APIRouter(prefix='/Appointment', tags=['Appointment'])
 
 
 @appointmenteR.delete('/{id}')
-async def del_appointment(
-    id: int, token=Security(get_token), at=Depends(get_apporepo)
-) -> None:
+async def del_appointment(id: int, token=Security(get_token), at=Depends(get_apporepo)) -> None:
     u = await introspection(token)
     uow = uowdep(at)()
     a = await TimetableService(uow).get_appointment(id)

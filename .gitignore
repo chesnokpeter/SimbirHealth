@@ -3,3 +3,4 @@ __pycache__
 venv
 scripts/migrations/versions/*
 !scripts/migrations/versions/.gitkeep
+.ruff_cache

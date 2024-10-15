@@ -29,16 +29,23 @@ class AccountRepo(PostgresDefaultRepo[ACCOUNT]):
             result = res
         return result
 
-    async def filter_by_name_from_count(self, nameFilter: str, offset: int = 0, limit: int | None = None) -> list[ACCOUNT] | None:
-        stmt = select(self.model).filter(
-            (self.model.firstName.like(f"%{nameFilter}%")) |
-            (self.model.lastName.like(f"%{nameFilter}%"))
-        ).offset(offset).limit(limit)
+    async def filter_by_name_from_count(
+        self, nameFilter: str, offset: int = 0, limit: int | None = None
+    ) -> list[ACCOUNT] | None:
+        stmt = (
+            select(self.model)
+            .filter(
+                (self.model.firstName.like(f'%{nameFilter}%'))
+                | (self.model.lastName.like(f'%{nameFilter}%'))
+            )
+            .offset(offset)
+            .limit(limit)
+        )
 
         res = await self.session.execute(stmt)  # type: ignore
         res = res.all()
         return [i[0] for i in res]
-    
+
     async def offset(
         self, offset: int = 0, limit: int | None = None, order=None, **data
     ) -> list[ACCOUNT] | None:

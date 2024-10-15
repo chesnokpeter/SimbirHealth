@@ -9,35 +9,30 @@ from account.schemas import AccessSch, AccessRefreshSch
 
 doctorsR = APIRouter(prefix='/Doctors', tags=['Doctors'])
 
-from account.depends import (
-    account,
-    lostoken,
-    uowdep,
-    tokenSecure,
-    get_token
-)
+from account.depends import account, lostoken, uowdep, tokenSecure, get_token
+
 
 @doctorsR.get('/')
 async def get_doctors(
-        nameFilter: str, count: int=100, from_ : int = Query(0, alias='from'), token=Security(get_token), uow=Depends(uowdep(account, lostoken))
-    ) -> list[AccountModel] | None:
+    nameFilter: str,
+    count: int = 100,
+    from_: int = Query(0, alias='from'),
+    token=Security(get_token),
+    uow=Depends(uowdep(account, lostoken)),
+) -> list[AccountModel] | None:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     await AccountService(uow).me(int(access['id']))
 
-    u = await AccountService(uow).get_doctors(nameFilter, from_, count) 
+    u = await AccountService(uow).get_doctors(nameFilter, from_, count)
     return u
 
-@doctorsR.get('/{id}') #!ДОПИСАТЬ
-async def get_doctor(
-        id : int, token=Security(get_token), uow=Depends(uowdep(account, lostoken))
-    ):
+
+@doctorsR.get('/{id}')  #!ДОПИСАТЬ
+async def get_doctor(id: int, token=Security(get_token), uow=Depends(uowdep(account, lostoken))):
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     await AccountService(uow).me(int(access['id']))
 
-    u = await AccountService(uow).get_doctor(id) 
+    u = await AccountService(uow).get_doctor(id)
     return u
-
-
-

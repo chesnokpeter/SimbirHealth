@@ -3,14 +3,14 @@ from core.repos.types import RestConnType
 
 import httpx
 
-class RestAPIConnector(AbsConnector):
 
+class RestAPIConnector(AbsConnector):
     connector_name = 'restapi'
-    
+
     def clientret(self):
         return httpx.AsyncClient()
 
-    def __init__(self, base_url: str, connector_name:str):
+    def __init__(self, base_url: str, connector_name: str):
         self.base_url = base_url
         self.connector_name = connector_name
 
@@ -18,14 +18,11 @@ class RestAPIConnector(AbsConnector):
         client = self.clientret()
         self._session = RestConnType(client=client, baseurl=self.base_url)
 
-    async def commit(self):
-        ...
+    async def commit(self): ...
 
-    async def rollback(self):
-        ...
+    async def rollback(self): ...
 
-    async def close(self):
-        ...
+    async def close(self): ...
 
     @property
     def session(self):

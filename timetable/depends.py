@@ -1,6 +1,6 @@
 from fastapi import Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.exceptions import  HTTPException
+from fastapi.exceptions import HTTPException
 
 from core.config import postgres_url
 
@@ -27,38 +27,50 @@ timetable = TimetableRepo()
 
 appointment = AppointmentRepo()
 
-def get_timetrepo(): return timetable
-def get_apporepo(): return appointment
+
+def get_timetrepo():
+    return timetable
+
+
+def get_apporepo():
+    return appointment
+
 
 def uowdep(*repos: AbsRepo):
     connectors_name = {i.require_connector for i in repos}
     connectors_done = [i for i in connectors if i.connector_name in connectors_name]
     return lambda: UnitOfWork(repos, connectors_done)
 
+
 secure = HTTPBearer()
 
+
 def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
-    if credentials.scheme != "Bearer":
-        raise HTTPException(
-            status_code=401,
-            detail="invalid authentication scheme"
-        )
-    
+    if credentials.scheme != 'Bearer':
+        raise HTTPException(status_code=401, detail='invalid authentication scheme')
+
     token = credentials.credentials
     return token
 
+
 async def introspection(token: str) -> AccountModel:
     async with httpx.AsyncClient() as client:
-        r = await client.get('http://account:8011/api/Authentication/Validate', params={'accessToken':token})
+        r = await client.get(
+            'http://account:8011/api/Authentication/Validate', params={'accessToken': token}
+        )
         r = r.json()
-        if r.get('error'): raise RestExceptions('invalid jwt token')
+        if r.get('error'):
+            raise RestExceptions('invalid jwt token')
         try:
             u = AccountModel(**r)
             return u
-        except: raise RestExceptions('invalid jwt token')
+        except:
+            raise RestExceptions('invalid jwt token')
+
 
 def get_accrepo(token: str):
     return RestDoctorRepo('restapiaccount', token)
+
 
 def get_hosrepo(token: str):
     return RestRoomsRepo('restapihospital', token)

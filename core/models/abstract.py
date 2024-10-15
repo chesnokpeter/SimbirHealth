@@ -11,5 +11,5 @@ class DbAbsModel(ABC):
     def model_dump(self):
         raise NotImplementedError
 
-class RestAPIAbsModel(ABC):
-    ...
+
+class RestAPIAbsModel(ABC): ...

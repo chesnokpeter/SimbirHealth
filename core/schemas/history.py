@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+
 class CreateHistory(BaseModel):
     date: datetime
     pacientId: int
@@ -9,4 +10,3 @@ class CreateHistory(BaseModel):
 
     room: str
     data: str
-

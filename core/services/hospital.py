@@ -5,7 +5,6 @@ from core.services.abstract import AbsService
 from core.uow import uowaccess
 
 
-
 class HospitalService(AbsService):
     @uowaccess('hospital')
     async def create(self, data: CreateHospital) -> HospitalModel:
@@ -25,15 +24,14 @@ class HospitalService(AbsService):
             await self.uow.commit()
             return h.model()
 
-
     @uowaccess('hospital')
-    async def get_hospitals(self, from_: int, count: int) -> list[HospitalModel]|None:
+    async def get_hospitals(self, from_: int, count: int) -> list[HospitalModel] | None:
         async with self.uow:
             h = await self.uow.hospital.offset(from_, count)
             return [i.model() for i in h]
 
     @uowaccess('hospital')
-    async def get_hospital(self, id: int) -> HospitalModel|None:
+    async def get_hospital(self, id: int) -> HospitalModel | None:
         async with self.uow:
             h = await self.uow.hospital.get_one(id=id)
             return h.model() if h else None

@@ -6,7 +6,6 @@ from core.enums import Roles
 from core.uow import uowaccess
 
 
-
 class DocumentService(AbsService):
     @uowaccess('history', 'account', 'hospital')
     async def create(self, data: CreateHistory) -> HistoryModel:
@@ -34,8 +33,6 @@ class DocumentService(AbsService):
             await self.uow.commit()
             return h.model()
 
-
-
     @uowaccess('history', 'account', 'hospital')
     async def update(self, id: int, data: CreateHistory) -> HistoryModel:
         async with self.uow:
@@ -62,20 +59,14 @@ class DocumentService(AbsService):
             await self.uow.commit()
             return h.model()
 
-
-
-
     @uowaccess('history')
     async def history_pacient(self, id: int) -> list[HistoryModel] | None:
         async with self.uow:
             h = await self.uow.history.get(pacientId=id)
             return [i.model() for i in h]
 
-
-
     @uowaccess('history')
     async def get_history(self, id: int) -> HistoryModel | None:
         async with self.uow:
             h = await self.uow.history.get_one(id=id)
             return h.model() if h else None
-

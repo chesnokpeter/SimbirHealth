@@ -1,10 +1,15 @@
-from core.exceptions import RestExceptions
+from core.exceptions import BaseExceptions
 
+from pydantic import BaseModel
 
-class JWTExceptions(RestExceptions): ...
+class JWTExceptions(BaseExceptions): ...
 
 
 class JWTAccessExceptions(JWTExceptions): ...
 
 
 class JWTRefreshExceptions(JWTExceptions): ...
+
+
+class ErrorModel(BaseModel):
+    error: str

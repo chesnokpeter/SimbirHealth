@@ -9,7 +9,7 @@ from core.infra.postgresql import PostgresConnector
 from core.repos.abstract import AbsRepo
 from core.repos.history import HistoryRepo
 from core.repos.appointment import AppointmentRepo
-from core.exceptions import RestExceptions
+from core.exceptions import BaseExceptions
 from core.uow import UnitOfWork
 from document.customrepos import RestDoctorRepo, RestHospitalRepo, RestUserRepo
 from document.customconnectors import RestAPIConnector
@@ -54,12 +54,12 @@ async def introspection(token: str) -> AccountModel:
         )
         r = r.json()
         if r.get('error'):
-            raise RestExceptions('invalid jwt token')
+            raise BaseExceptions('invalid jwt token')
         try:
             u = AccountModel(**r)
             return u
         except:
-            raise RestExceptions('invalid jwt token')
+            raise BaseExceptions('invalid jwt token')
 
 
 def get_accrepo(token: str):

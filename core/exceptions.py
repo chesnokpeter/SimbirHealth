@@ -6,25 +6,45 @@ class CoreException(Exception):
         self.message = message
 
 
-class UOWException(CoreException): ...
+class UOWException(CoreException):
+    error = 'UOW Error'
 
 
-class NoConnectorForRepo(UOWException): ...
+class NoConnectorForRepo(UOWException):
+    error = 'No Connector For Repo'
 
 
-class NoAccessForRepo(UOWException): ...
+class NoAccessForRepo(UOWException):
+    error = 'No Access For Repo'
 
 
-class RestExceptions(CoreException): ...
+class BaseExceptions(CoreException): 
+    error = 'Base Error'
 
 
-class AccountException(RestExceptions): ...
 
 
-class HospitalException(RestExceptions): ...
+
+class AccountException(BaseExceptions): ...
 
 
-class TimetableException(RestExceptions): ...
+class HospitalException(BaseExceptions): ...
 
 
-class DocumentException(RestExceptions): ...
+class TimetableException(BaseExceptions): ...
+
+
+class DocumentException(BaseExceptions): ...
+
+
+
+
+class NotFoundError(BaseException):
+    error = 'Not Found Error'
+
+class ConflictError(BaseException):
+    error = 'Already Error'
+
+class IncorrectError(BaseException):
+    error = 'Incorrect Error'
+

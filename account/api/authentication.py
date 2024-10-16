@@ -4,7 +4,6 @@ from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch
 from core.services.account import AccountService
 from core.models.account import AccountModel
 from core.enums import Roles
-from core.exceptions import AccountException
 from account.schemas import AccessSch, AccessRefreshSch
 
 authenticationR = APIRouter(prefix='/Authentication', tags=['Authentication'])

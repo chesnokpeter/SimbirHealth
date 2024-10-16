@@ -2,7 +2,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from core.exceptions import RestExceptions
+from core.exceptions import BaseExceptions, ConflictError, NotFoundError
 
 from hospital.api.hospitals import hospitalsR
 
@@ -24,9 +24,15 @@ apiRouter = APIRouter(prefix='/api')
 apiRouter.include_router(hospitalsR)
 
 
-@app.exception_handler(RestExceptions)
-async def exception_handler(res, exc: RestExceptions):
-    return JSONResponse({'error': exc.message}, 400)
+@app.exception_handler(BaseExceptions)
+async def exception_handler(res, exc: BaseExceptions):
+    status = 400
+    if isinstance(exc, ConflictError):
+        status = 409
+    elif isinstance(exc, NotFoundError):
+        status = 404
+    return JSONResponse({'error': exc.message}, status_code=status)
+
 
 
 app.include_router(apiRouter)

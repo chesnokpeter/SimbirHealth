@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Security, Query, Path
 from core.enums import Roles
-from core.exceptions import AccountException, HospitalException
+from core.exceptions import AccountException
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
 from core.services.hospital import HospitalService

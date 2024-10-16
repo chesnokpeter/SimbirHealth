@@ -77,7 +77,7 @@ class AllReposUnitOfWork(AbsUnitOfWork, ABC):
 
 
 def uowaccess(*access: str):
-    """this decorator checks access to repositories inside a unit of work"""
+    """этот декоратор проверяет доступ к репозиториям внутри unit of work"""
 
     def decorator(func):
         @wraps(func)

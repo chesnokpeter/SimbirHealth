@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Query
+from fastapi import APIRouter, Depends, Security, Query, Path
 from core.enums import Roles
 from core.exceptions import AccountException, HospitalException
 from core.models.hospital import HospitalModel
@@ -12,8 +12,8 @@ hospitalsR = APIRouter(prefix='/Hospitals', tags=['Hospitals'])
 
 @hospitalsR.get('/')
 async def get_hospitals(
-    count: int = 100,
-    from_: int = Query(0, alias='from'),
+    count: int = Query(100, gt=0),
+    from_: int = Query(0, alias='from', gt=-1),
     token=Security(get_token),
     uow=Depends(uowdep(hospital)),
 ) -> list[HospitalModel] | None:
@@ -24,7 +24,7 @@ async def get_hospitals(
 
 
 @hospitalsR.get('/{id}')
-async def get_hospital(id: int, token=Security(get_token), uow=Depends(uowdep(hospital))):
+async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))):
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h
@@ -33,7 +33,7 @@ async def get_hospital(id: int, token=Security(get_token), uow=Depends(uowdep(ho
 
 @hospitalsR.get('/{id}/Rooms')
 async def get_hospital_rooms(
-    id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
+    id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))
 ) -> HospitalModel | None:
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
@@ -56,7 +56,7 @@ async def create_hospital(
 
 @hospitalsR.put('/{id}')
 async def update_hospital(
-    id: int, data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
+    data: CreateHospital, id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))
 ) -> HospitalModel:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
@@ -69,7 +69,7 @@ async def update_hospital(
 
 @hospitalsR.delete('/{id}')
 async def delete_hospital(
-    id: int, token=Security(get_token), uow=Depends(uowdep(hospital))
+    id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))
 ) -> None:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:

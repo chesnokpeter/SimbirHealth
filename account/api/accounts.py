@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security, Query, Path
 
 from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, AdminCreate
 from core.services.account import AccountService
@@ -40,8 +40,8 @@ async def update(
 
 @accountsR.get('/')
 async def admin_get_accounts(
-    count: int = 100,
-    from_: int = Query(0, alias='from'),
+    count: int = Query(100, gt=0),
+    from_: int = Query(0, alias='from', gt=-1),
     token=Security(get_token),
     uow=Depends(uowdep(account)),
 ) -> list[AccountModel] | None:
@@ -56,7 +56,7 @@ async def admin_get_accounts(
 
 @accountsR.get('/{id}')
 async def get_account(
-    id: int, token=Security(get_token), uow=Depends(uowdep(account))
+    id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account))
 ) -> AccountModel | None:
     access = tokenSecure(token)
     u = await AccountService(uow).me(id)
@@ -80,7 +80,7 @@ async def admin_create(
 
 @accountsR.put('/{id}')
 async def admin_update(
-    id: int, data: AdminCreate, token=Security(get_token), uow=Depends(uowdep(account))
+    data: AdminCreate, id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account))
 ) -> AccountModel:
     access = tokenSecure(token)
 
@@ -92,7 +92,7 @@ async def admin_update(
 
 
 @accountsR.delete('/{id}')
-async def admin_delete(id: int, token=Security(get_token), uow=Depends(uowdep(account))) -> None:
+async def admin_delete(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account))) -> None:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))

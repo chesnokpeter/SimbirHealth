@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, Query, Path
 
 from core.services.document import DocumentService
 from core.exceptions import AccountException
@@ -25,7 +25,7 @@ async def create_history(
 
 @historyR.put('/{id}')
 async def upd_history(
-    id: int, data: CreateHistory, token=Security(get_token), ht=Depends(get_hisrepo)
+    data: CreateHistory, id: int = Path(gt=0), token=Security(get_token), ht=Depends(get_hisrepo)
 ) -> HistoryModel:
     u = await introspection(token)
     if not (Roles.ADMIN in u.roles or Roles.MANAGER in u.roles or Roles.DOCTOR):
@@ -37,7 +37,7 @@ async def upd_history(
 
 @historyR.get('/Account/{id}')
 async def get_history_pacient(
-    id: int, token=Security(get_token), ht=Depends(get_hisrepo)
+    id: int = Path(gt=0), token=Security(get_token), ht=Depends(get_hisrepo)
 ) -> list[HistoryModel] | None:
     u = await introspection(token)
     uow = uowdep(ht)()
@@ -53,7 +53,7 @@ async def get_history_pacient(
 
 @historyR.get('/{id}')
 async def get_history(
-    id: int, token=Security(get_token), ht=Depends(get_hisrepo)
+    id: int = Path(gt=0), token=Security(get_token), ht=Depends(get_hisrepo)
 ) -> HistoryModel | None:
     u = await introspection(token)
     uow = uowdep(ht)()

@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 
 class CreateHistory(BaseModel):
     date: datetime
-    pacientId: int
-    hospitalId: int
-    doctorId: int
+    pacientId: int = Field(gt=0)
+    hospitalId: int = Field(gt=0)
+    doctorId: int = Field(gt=0)
 
     room: str
     data: str

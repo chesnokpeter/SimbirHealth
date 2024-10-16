@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security, Body, Query, Path
 
 from core.services.timetable import TimetableService
 from core.exceptions import AccountException
@@ -10,7 +10,7 @@ appointmenteR = APIRouter(prefix='/Appointment', tags=['Appointment'])
 
 
 @appointmenteR.delete('/{id}')
-async def del_appointment(id: int, token=Security(get_token), at=Depends(get_apporepo)) -> None:
+async def del_appointment(id: int = Path(gt=0), token=Security(get_token), at=Depends(get_apporepo)) -> None:
     u = await introspection(token)
     uow = uowdep(at)()
     a = await TimetableService(uow).get_appointment(id)

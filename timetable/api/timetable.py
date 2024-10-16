@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security, Body, Query, Path
 
 from core.services.timetable import TimetableService
 from core.schemas.timetable import TimetableCreate, AppointmentsCreate
@@ -37,7 +37,7 @@ async def new_timetable(
 
 @timetableR.put('/{id}')
 async def upd_timetable(
-    id: int, data: TimetableCreate, token=Security(get_token), tt=Depends(get_timetrepo)
+    data: TimetableCreate, id: int = Path(gt=0),  token=Security(get_token), tt=Depends(get_timetrepo)
 ) -> TimetableModel:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
@@ -48,7 +48,7 @@ async def upd_timetable(
 
 
 @timetableR.delete('/{id}')
-async def del_timetable(id: int, token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
+async def del_timetable(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
         raise AccountException('user not admin or manager')
@@ -58,7 +58,7 @@ async def del_timetable(id: int, token=Security(get_token), tt=Depends(get_timet
 
 
 @timetableR.delete('/Doctor/{id}')
-async def del_from_doctor(id: int, token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
+async def del_from_doctor(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
         raise AccountException('user not admin or manager')
@@ -68,7 +68,7 @@ async def del_from_doctor(id: int, token=Security(get_token), tt=Depends(get_tim
 
 
 @timetableR.delete('/Hospital/{id}')
-async def del_from_hospital(id: int, token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
+async def del_from_hospital(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
         raise AccountException('user not admin or manager')
@@ -79,8 +79,8 @@ async def del_from_hospital(id: int, token=Security(get_token), tt=Depends(get_t
 
 @timetableR.get('/Hospital/{id}')
 async def get_timetable_from_hospital(
-    id: int,
     to: datetime,
+    id: int = Path(gt=0),
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
@@ -93,8 +93,8 @@ async def get_timetable_from_hospital(
 
 @timetableR.get('/Doctor/{id}')
 async def get_timetable_from_doctor(
-    id: int,
     to: datetime,
+    id: int = Path(gt=0),
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
@@ -107,9 +107,9 @@ async def get_timetable_from_doctor(
 
 @timetableR.get('/Hospital/{id}/Room/{room}')
 async def get_timetable_from_hospital_room(
-    id: int,
     room: str,
     to: datetime,
+    id: int = Path(gt=0),
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
@@ -124,8 +124,8 @@ async def get_timetable_from_hospital_room(
 
 @timetableR.post('/{id}/Appointments')
 async def create_appointments(
-    id: int,
     data: AppointmentsCreate,
+    id: int = Path(gt=0),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
     at=Depends(get_apporepo),
@@ -138,7 +138,7 @@ async def create_appointments(
 
 @timetableR.get('/{id}/Appointments')
 async def get_available_appointments(
-    id: int, token=Security(get_token), tt=Depends(get_timetrepo), at=Depends(get_apporepo)
+    id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo), at=Depends(get_apporepo)
 ) -> AvailableAppointments:
     u = await introspection(token)
     uow = uowdep(tt, at)()

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security, Body, Query, Path
 
 from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, AdminCreate
 from core.services.account import AccountService
@@ -15,8 +15,8 @@ from account.depends import account, lostoken, uowdep, tokenSecure, get_token
 @doctorsR.get('/')
 async def get_doctors(
     nameFilter: str,
-    count: int = 100,
-    from_: int = Query(0, alias='from'),
+    count: int = Query(100, gt=0),
+    from_: int = Query(0, alias='from', gt=-1),
     token=Security(get_token),
     uow=Depends(uowdep(account, lostoken)),
 ) -> list[AccountModel] | None:
@@ -28,8 +28,8 @@ async def get_doctors(
     return u
 
 
-@doctorsR.get('/{id}')  #!ДОПИСАТЬ
-async def get_doctor(id: int, token=Security(get_token), uow=Depends(uowdep(account, lostoken))):
+@doctorsR.get('/{id}')
+async def get_doctor(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account, lostoken))):
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     await AccountService(uow).me(int(access['id']))

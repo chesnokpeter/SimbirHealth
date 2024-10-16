@@ -10,11 +10,12 @@ from core.enums import Roles
 
 DATABASE_URL = os.environ.get('POSTGRES_URL')
 
-
 async def main():
     engine = create_async_engine(DATABASE_URL)
 
     AsyncSessionLocal = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+    await asyncio.sleep(5) 
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -38,6 +39,7 @@ async def main():
                 roles=roles,
             )
             session.add(user)
+            print(f'added {user}')
 
     async with AsyncSessionLocal() as session:
         async with session.begin():

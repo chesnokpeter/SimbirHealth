@@ -1,7 +1,7 @@
 # SimbirHealth
 
 ## Запуск
-`docker-composer up -d`
+`docker compose up -d`
 
 ## Основное задание
 1. Account URL: http://localhost:8011/docs

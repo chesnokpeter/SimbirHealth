@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, Security, Body, Query
+from fastapi import APIRouter, Depends, Security, Query
 from core.enums import Roles
 from core.exceptions import AccountException, HospitalException
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
 from core.services.hospital import HospitalService
+from hospital.depends import uowdep, get_token, introspection, hospital
 
 hospitalsR = APIRouter(prefix='/Hospitals', tags=['Hospitals'])
 
-from hospital.depends import uowdep, get_token, introspection, hospital
 
 
 @hospitalsR.get('/')
@@ -22,11 +22,13 @@ async def get_hospitals(
     return h
 
 
+
 @hospitalsR.get('/{id}')
 async def get_hospital(id: int, token=Security(get_token), uow=Depends(uowdep(hospital))):
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h
+
 
 
 @hospitalsR.get('/{id}/Rooms')
@@ -36,6 +38,7 @@ async def get_hospital_rooms(
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h.rooms if h else None
+
 
 
 @hospitalsR.post('/')
@@ -50,6 +53,7 @@ async def create_hospital(
     return r
 
 
+
 @hospitalsR.put('/{id}')
 async def update_hospital(
     id: int, data: CreateHospital, token=Security(get_token), uow=Depends(uowdep(hospital))
@@ -60,6 +64,7 @@ async def update_hospital(
 
     r = await HospitalService(uow).update(id, data)
     return r
+
 
 
 @hospitalsR.delete('/{id}')

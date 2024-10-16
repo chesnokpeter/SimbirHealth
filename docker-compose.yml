@@ -65,7 +65,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: psql
-      POSTGRES_DB: SimbirHealth
+      POSTGRES_DB: SimbirHealthDB
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:

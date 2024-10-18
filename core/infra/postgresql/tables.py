@@ -156,8 +156,7 @@ class TIMETABLE(Base, DbAbsTable):
             doctor_id=self.doctor_id,
             from_time=self.from_dt,
             to_time=self.to_dt,
-            room=self.room,
-            appointments=self.appointments,
+            room=self.room
         )
 
 

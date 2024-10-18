@@ -10,34 +10,22 @@ class HospitalRepo(PostgresDefaultRepo[HOSPITAL]):
 
     async def get(self, **data) -> list[HOSPITAL] | None:
         result = await self.session.execute(
-            select(self.model).order_by(self.model.id.desc()).filter_by(**data)
+            select(self.model).order_by(self.model.id.desc()).filter_by(**data, is_deleted=False)
         )  # type: ignore
-        filtered_results = []
-        for i in result.all():
-            if not i[0].is_deleted:
-                filtered_results.append(i[0])
+        return [i[0] for i in result.all()]
+
 
     async def get_one(self, **data) -> HOSPITAL | None:
-        stmt = select(self.model).filter_by(**data)
+        stmt = select(self.model).filter_by(**data, is_deleted=False)
         res = await self.session.execute(stmt)  # type: ignore
         res = res.first()
-        if res:
-            if not res[0].is_deleted:
-                result = res[0]
-            else:
-                result = None
-        else:
-            result = res
-        return result
+        return res[0] if res else res
+
 
     async def offset(
         self, offset: int = 0, limit: int | None = None, order=None, **data
     ) -> list[HOSPITAL] | None:
-        stmt = select(self.model).offset(offset).limit(limit).order_by(order).filter_by(**data)
+        stmt = select(self.model).offset(offset).limit(limit).order_by(order).filter_by(**data, is_deleted=False)
         res = await self.session.execute(stmt)  # type: ignore
         res = res.all()
-        filtered_results = []
-        for i in res:
-            if not i[0].is_deleted:
-                filtered_results.append(i[0])
-        return filtered_results
+        return [i[0] for i in res]

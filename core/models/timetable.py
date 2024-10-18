@@ -10,4 +10,3 @@ class TimetableModel(BaseModel, DbAbsModel):
     from_time: datetime
     to_time: datetime
     room: str
-    appointments: list

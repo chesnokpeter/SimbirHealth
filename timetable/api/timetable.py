@@ -84,7 +84,7 @@ async def get_timetable_from_hospital(
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
-) -> list[TimetableModel]:
+) -> list[TimetableModel] | None:
     u = await introspection(token)
     uow = uowdep(tt)()
     t = await TimetableService(uow).timetable_from_hospital(id, to, from_)
@@ -98,7 +98,7 @@ async def get_timetable_from_doctor(
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
-) -> list[TimetableModel]:
+) -> list[TimetableModel] | None:
     u = await introspection(token)
     uow = uowdep(tt)()
     t = await TimetableService(uow).timetable_from_doctor(id, to, from_)
@@ -113,7 +113,7 @@ async def get_timetable_from_hospital_room(
     from_: datetime = Query(alias='from'),
     token=Security(get_token),
     tt=Depends(get_timetrepo),
-) -> list[TimetableModel]:
+) -> list[TimetableModel] | None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER or Roles.DOCTOR in u.roles):
         raise PermissionError('user not admin or manager or doctor')

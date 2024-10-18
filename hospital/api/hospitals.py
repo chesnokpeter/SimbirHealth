@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Security, Query, Path
 from core.enums import Roles
-from core.exceptions import AccountException
+from core.exceptions import PermissionError
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
 from core.services.hospital import HospitalService
@@ -47,7 +47,7 @@ async def create_hospital(
 ) -> HospitalModel:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
 
     r = await HospitalService(uow).create(data)
     return r
@@ -60,7 +60,7 @@ async def update_hospital(
 ) -> HospitalModel:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
 
     r = await HospitalService(uow).update(id, data)
     return r
@@ -73,6 +73,6 @@ async def delete_hospital(
 ) -> None:
     u = await introspection(token)
     if not Roles.ADMIN in u.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
     h = await HospitalService(uow).delete(id)
     return h

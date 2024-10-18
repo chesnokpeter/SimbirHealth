@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, Security, Query, Path
+from fastapi import APIRouter, Depends, Security, Path
 
 from core.services.document import DocumentService
-from core.exceptions import AccountException
+from core.exceptions import PermissionError
 from core.schemas.history import CreateHistory
 from core.models.history import HistoryModel
 from core.enums import Roles
@@ -17,7 +17,7 @@ async def create_history(
 ) -> HistoryModel:
     u = await introspection(token)
     if not (Roles.ADMIN in u.roles or Roles.MANAGER in u.roles or Roles.DOCTOR):
-        raise AccountException('user not admin or manager or doctor')
+        raise PermissionError('user not admin or manager or doctor')
     uow = uowdep(ht, get_accrepo(token), get_hosrepo(token))()
     h = await DocumentService(uow).create(data)
     return h
@@ -29,7 +29,7 @@ async def upd_history(
 ) -> HistoryModel:
     u = await introspection(token)
     if not (Roles.ADMIN in u.roles or Roles.MANAGER in u.roles or Roles.DOCTOR):
-        raise AccountException('user not admin or manager or doctor')
+        raise PermissionError('user not admin or manager or doctor')
     uow = uowdep(ht, get_accrepo(token), get_hosrepo(token))()
     h = await DocumentService(uow).update(id, data)
     return h
@@ -46,7 +46,7 @@ async def get_history_pacient(
         if not (
             Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or i.pacientId == u.id
         ):  # Вот здесь добавил чтобы Админы тоже могли смотреть историю
-            raise AccountException('user not admin or doctor or pacient')
+            raise PermissionError('user not admin or doctor or pacient')
         break
     return h
 
@@ -61,5 +61,5 @@ async def get_history(
     if not (
         Roles.ADMIN in u.roles or Roles.DOCTOR in u.roles or h.pacientId == u.id
     ):  # Вот здесь добавил чтобы Админы тоже могли смотреть историю
-        raise AccountException('user not admin or doctor or pacient')
+        raise PermissionError('user not admin or doctor or pacient')
     return h

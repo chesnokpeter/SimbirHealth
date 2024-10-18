@@ -23,11 +23,11 @@ app.add_middleware(
 
 apiRouter = APIRouter(prefix='/api')
 apiRouter.responses = {
-    400: {"model":ErrorModel,"description": "Ошибка при обработке данных"},
-    401: {"model":ErrorModel,"description": "Токен неверен / истёк"},
+    400: {"model":ErrorModel,"description": "Некорректные данные в запросе"},
+    401: {"model":ErrorModel,"description": "Токен недействителен или срок его действия истёк"},
     403: {"model":ErrorModel,"description": "Нет доступа"},
     404: {"model":ErrorModel,"description": "Ресурс не найден"},
-    409: {"model":ErrorModel,"description": "Ошибка конфликта"}
+    409: {"model":ErrorModel,"description": "Конфликт данных"}
 }
 
 apiRouter.include_router(authenticationR)

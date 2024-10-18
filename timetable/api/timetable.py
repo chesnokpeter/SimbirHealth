@@ -4,7 +4,7 @@ from core.services.timetable import TimetableService
 from core.schemas.timetable import TimetableCreate, AppointmentsCreate
 from core.models.timetable import TimetableModel
 from core.models.appoiniment import AppoinimentModel
-from core.exceptions import AccountException
+from core.exceptions import PermissionError
 from core.enums import Roles
 
 from timetable.depends import (
@@ -29,7 +29,7 @@ async def new_timetable(
 ) -> TimetableModel:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
-        raise AccountException('user not admin or manager')
+        raise PermissionError('user not admin or manager')
     uow = uowdep(tt, get_accrepo(token), get_hosrepo(token))()
     t = await TimetableService(uow).create(data)
     return t
@@ -41,7 +41,7 @@ async def upd_timetable(
 ) -> TimetableModel:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
-        raise AccountException('user not admin or manager')
+        raise PermissionError('user not admin or manager')
     uow = uowdep(tt, get_accrepo(token), get_hosrepo(token))()
     t = await TimetableService(uow).update(id, data)
     return t
@@ -51,7 +51,7 @@ async def upd_timetable(
 async def del_timetable(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
-        raise AccountException('user not admin or manager')
+        raise PermissionError('user not admin or manager')
     uow = uowdep(tt)()
     t = await TimetableService(uow).delete(id)
     return t
@@ -61,7 +61,7 @@ async def del_timetable(id: int = Path(gt=0), token=Security(get_token), tt=Depe
 async def del_from_doctor(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
-        raise AccountException('user not admin or manager')
+        raise PermissionError('user not admin or manager')
     uow = uowdep(tt)()
     t = await TimetableService(uow).delete_from_doctor(id)
     return t
@@ -71,7 +71,7 @@ async def del_from_doctor(id: int = Path(gt=0), token=Security(get_token), tt=De
 async def del_from_hospital(id: int = Path(gt=0), token=Security(get_token), tt=Depends(get_timetrepo)) -> None:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER in u.roles):
-        raise AccountException('user not admin or manager')
+        raise PermissionError('user not admin or manager')
     uow = uowdep(tt)()
     t = await TimetableService(uow).delete_from_hospital(id)
     return t
@@ -116,7 +116,7 @@ async def get_timetable_from_hospital_room(
 ) -> list[TimetableModel]:
     u = await introspection(token)
     if not (Roles.ADMIN or Roles.MANAGER or Roles.DOCTOR in u.roles):
-        raise AccountException('user not admin or manager or doctor')
+        raise PermissionError('user not admin or manager or doctor')
     uow = uowdep(tt)()
     t = await TimetableService(uow).timetable_from_room(id, room, to, from_)
     return t

@@ -4,7 +4,7 @@ from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, Ad
 from core.services.account import AccountService
 from core.models.account import AccountModel
 from core.enums import Roles
-from core.exceptions import AccountException
+from core.exceptions import PermissionError
 from account.schemas import AccessSch, AccessRefreshSch
 
 accountsR = APIRouter(prefix='/Accounts', tags=['Accounts'])
@@ -21,11 +21,11 @@ from account.depends import (
 
 
 @accountsR.get('/Me')
-async def me(token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> SignUpSch:
+async def me(token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> AccountModel:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     user = await AccountService(uow).me(int(access['id']))
-    return SignUpSch(**user.model_dump())
+    return user
 
 
 @accountsR.put('/Update')
@@ -49,7 +49,7 @@ async def admin_get_accounts(
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
     u = await AccountService(uow).get_all(from_, count)
     return u
 
@@ -71,7 +71,7 @@ async def admin_create(
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
     user = await AccountService(uow).admin_create(data)
     access = accessCreate({'id': str(user.id)})
     refresh = refreshCreate({'id': str(user.id)})
@@ -86,7 +86,7 @@ async def admin_update(
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
     user = await AccountService(uow).admin_update(id, data)
     return user
 
@@ -97,6 +97,6 @@ async def admin_delete(id: int = Path(gt=0), token=Security(get_token), uow=Depe
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
-        raise AccountException('user not admin')
+        raise PermissionError('user not admin')
     user = await AccountService(uow).admin_delete(id)
     return user

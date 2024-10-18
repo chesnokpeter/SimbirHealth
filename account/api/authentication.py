@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, Security, Body, Query
 
-from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch
+from core.schemas.account import SignUpSch, SignInSch, SignOutSch
 from core.services.account import AccountService
 from core.models.account import AccountModel
-from core.enums import Roles
 from account.schemas import AccessSch, AccessRefreshSch
 
 authenticationR = APIRouter(prefix='/Authentication', tags=['Authentication'])
@@ -15,7 +14,6 @@ from account.depends import (
     accessCreate,
     refreshCreate,
     tokenSecure,
-    get_token,
 )
 
 

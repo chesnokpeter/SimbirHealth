@@ -1,4 +1,4 @@
-from core.exceptions import HospitalException
+from core.exceptions import NotFoundError
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
 from core.services.abstract import AbsService
@@ -18,7 +18,7 @@ class HospitalService(AbsService):
         async with self.uow:
             exist = await self.uow.hospital.get_one(id=id)
             if not exist:
-                raise HospitalException('hospital does not found')
+                raise NotFoundError('hospital does not found')
 
             h = await self.uow.hospital.update(id=id, **data.model_dump())
             await self.uow.commit()

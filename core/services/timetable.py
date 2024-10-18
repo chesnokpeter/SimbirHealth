@@ -1,4 +1,4 @@
-from core.exceptions import TimetableException, AccountException, HospitalException
+from core.exceptions import NotFoundError, ConflictError, IncorrectError
 from core.models.timetable import TimetableModel
 from core.enums import Roles
 from core.schemas.timetable import TimetableCreate, AppointmentsCreate
@@ -15,15 +15,15 @@ class TimetableService(AbsService):
         async with self.uow:
             u = await self.uow.account.get_one(id=data.doctorId)
             if not u:
-                raise AccountException('doctor not found')
+                raise NotFoundError('doctor not found')
             if not Roles.DOCTOR in u.roles:
-                raise AccountException('user not doctor')
+                raise NotFoundError('user not doctor')
 
             h = await self.uow.hospital.get_one(id=data.hospitalId)
             if not h:
-                raise HospitalException('hospital not found')
+                raise NotFoundError('hospital not found')
             if data.room not in h.rooms:
-                raise HospitalException('no room at the hospital')
+                raise NotFoundError('no room at the hospital')
 
             from_dt = data.from_dt.replace(tzinfo=None)
             to_dt = data.to_dt.replace(tzinfo=None)
@@ -43,21 +43,21 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_one(id=id)
             if not t:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
             if t.appointments:
-                raise TimetableException('timetable have an appointments')
+                raise ConflictError('timetable have an appointments')
 
             u = await self.uow.account.get_one(id=data.doctorId)
             if not u:
-                raise AccountException('doctor not found')
+                raise NotFoundError('doctor not found')
             if not Roles.DOCTOR in u.roles:
-                raise AccountException('user not doctor')
+                raise NotFoundError('user not doctor')
 
             h = await self.uow.hospital.get_one(id=data.hospitalId)
             if not h:
-                raise HospitalException('hospital not found')
+                raise NotFoundError('hospital not found')
             if data.room not in h.rooms:
-                raise HospitalException('no room at the hospital')
+                raise NotFoundError('no room at the hospital')
 
             from_dt = data.from_dt.replace(tzinfo=None)
             to_dt = data.to_dt.replace(tzinfo=None)
@@ -78,7 +78,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_one(id=id)
             if not t:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
 
             await self.uow.timetable.delete(id)
             await self.uow.commit()
@@ -92,23 +92,23 @@ class TimetableService(AbsService):
             t = await self.uow.timetable.get_one(id=id)
 
             if not t:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
 
             aware_data_time = data.time.astimezone(timezone.utc)
             aware_from_dt = t.from_dt.astimezone(timezone.utc)
             aware_to_dt = t.to_dt.astimezone(timezone.utc)
 
             if aware_data_time < aware_from_dt or aware_data_time >= aware_to_dt:
-                raise TimetableException('appointment time outside timetable range')
+                raise IncorrectError('appointment time outside timetable range')
 
             time_diff = data.time - t.from_dt
             if time_diff.total_seconds() % (30 * 60) != 0:
-                raise TimetableException('appointment time must be in 30-minute intervals')
+                raise IncorrectError('appointment time must be in 30-minute intervals')
 
             appointment_exists = await self.uow.appointment.get_one(timetable_id=id, time=data.time)
 
             if appointment_exists:
-                raise TimetableException('time slot already booked')
+                raise ConflictError('time slot already booked')
 
             a = await self.uow.appointment.add(
                 **data.model_dump(), timetable_id=t.id, patient_id=user_id
@@ -121,7 +121,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_one(id=id)
             if not t:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
 
             from_time = t.from_dt
             to_time = t.to_dt
@@ -147,7 +147,7 @@ class TimetableService(AbsService):
         async with self.uow:
             a = await self.uow.appointment.get_one(id=id)
             if not a:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
             return a.model()
 
     @uowaccess('appointment')
@@ -155,7 +155,7 @@ class TimetableService(AbsService):
         async with self.uow:
             a = await self.uow.appointment.get_one(id=id)
             if not a:
-                raise TimetableException('timetable not found')
+                raise NotFoundError('timetable not found')
             await self.uow.appointment.delete(id)
             await self.uow.commit()
             return None
@@ -165,7 +165,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get(doctor_id=doctor_id)
             if not t:
-                raise TimetableException('doctor`s timetable not found')
+                raise NotFoundError('doctor`s timetable not found')
             for i in t:
                 await self.uow.timetable.delete(i.id)
             await self.uow.commit()
@@ -176,7 +176,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get(hospital_id=hospital_id)
             if not t:
-                raise TimetableException('hospital`s timetable not found')
+                raise NotFoundError('hospital`s timetable not found')
             for i in t:
                 await self.uow.timetable.delete(i.id)
             await self.uow.commit()
@@ -189,7 +189,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_by_time_range(from_, to, hospital_id=hospital_id)
             if not t:
-                raise TimetableException('hospital timetable not found for this range')
+                raise NotFoundError('hospital timetable not found for this range')
 
             return [timetable.model() for timetable in t]
 
@@ -200,7 +200,7 @@ class TimetableService(AbsService):
         async with self.uow:
             t = await self.uow.timetable.get_by_time_range(from_, to, doctor_id=doctor_id)
             if not t:
-                raise TimetableException('doctor timetable not found for this range')
+                raise NotFoundError('doctor timetable not found for this range')
 
             return [timetable.model() for timetable in t]
 
@@ -213,6 +213,6 @@ class TimetableService(AbsService):
                 from_, to, hospital_id=hospital_id, room=room
             )
             if not t:
-                raise TimetableException('hospital room timetable not found for this range')
+                raise NotFoundError('hospital room timetable not found for this range')
 
             return [timetable.model() for timetable in t]

@@ -32,6 +32,8 @@ def tokenSecure(token: str) -> dict:
         raise JWTExceptions(message='invalid jwt token')
     except jwt.InvalidTokenError:
         raise JWTExceptions(message='invalid jwt token')
+    except:
+        raise JWTExceptions(message='invalid jwt token')
 
 
 postgres = PostgresConnector(postgres_url)
@@ -48,12 +50,14 @@ def uowdep(*repos: AbsRepo):
     return lambda: UnitOfWork(repos, connectors_done)
 
 
-secure = HTTPBearer()
+secure = HTTPBearer(auto_error=False)
 
 
-def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
+def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)) -> str:
+    if not credentials:
+        raise JWTExceptions(message='not authenticated')
     if credentials.scheme != 'Bearer':
-        raise HTTPException(status_code=401, detail='invalid authentication scheme')
+        raise JWTExceptions(detail='invalid authentication scheme')
 
     token = credentials.credentials
     return token

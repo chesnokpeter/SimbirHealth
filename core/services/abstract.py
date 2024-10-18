@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Annotated, TypeAlias
 from core.uow import UnitOfWork, AllReposUnitOfWork
 

@@ -18,33 +18,35 @@ class NoAccessForRepo(UOWException):
     error = 'No Access For Repo'
 
 
-class BaseExceptions(CoreException): 
-    error = 'Base Error'
+class ServiceException(CoreException): 
+    error = 'Service Error'
 
 
 
 
 
-class AccountException(BaseExceptions): ...
+class AccountException(ServiceException): ...
 
 
-class HospitalException(BaseExceptions): ...
+class HospitalException(ServiceException): ...
 
 
-class TimetableException(BaseExceptions): ...
+class TimetableException(ServiceException): ...
 
 
-class DocumentException(BaseExceptions): ...
+class DocumentException(ServiceException): ...
 
 
 
 
-class NotFoundError(BaseException):
+class NotFoundError(ServiceException):
     error = 'Not Found Error'
 
-class ConflictError(BaseException):
-    error = 'Already Error'
+class ConflictError(ServiceException):
+    error = 'Conflict Error'
 
-class IncorrectError(BaseException):
+class IncorrectError(ServiceException):
     error = 'Incorrect Error'
 
+class PermissionError(ServiceException):
+    error = 'Permission Error'

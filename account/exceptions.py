@@ -1,8 +1,8 @@
-from core.exceptions import BaseExceptions
+from core.exceptions import ServiceException
 
 from pydantic import BaseModel
 
-class JWTExceptions(BaseExceptions): ...
+class JWTExceptions(ServiceException): ...
 
 
 class JWTAccessExceptions(JWTExceptions): ...

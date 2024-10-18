@@ -1,4 +1,4 @@
-from core.exceptions import DocumentException, AccountException, HospitalException
+from core.exceptions import NotFoundError, ConflictError, IncorrectError
 from core.models.history import HistoryModel
 from core.schemas.history import CreateHistory
 from core.services.abstract import AbsService
@@ -12,20 +12,20 @@ class DocumentService(AbsService):
         async with self.uow:
             p = await self.uow.account.get_one(id=data.pacientId)
             if not p:
-                raise AccountException('user not found')
+                raise NotFoundError('user not found')
             if not Roles.USER in p.roles:
-                raise AccountException('user not "user"')
+                raise IncorrectError('user not "user"')
             d = await self.uow.account.get_one(id=data.doctorId)
             if not d:
-                raise AccountException('doctor not found')
+                raise NotFoundError('doctor not found')
             if not Roles.DOCTOR in d.roles:
-                raise AccountException('user not doctor')
+                raise NotFoundError('user not doctor')
 
             h = await self.uow.hospital.get_one(id=data.hospitalId)
             if not h:
-                raise HospitalException('hospital not found')
+                raise NotFoundError('hospital not found')
             if not data.room in h.rooms:
-                raise HospitalException('no room at the hospital')
+                raise NotFoundError('no room at the hospital')
 
             date = data.date.replace(tzinfo=None)
 
@@ -38,20 +38,20 @@ class DocumentService(AbsService):
         async with self.uow:
             p = await self.uow.account.get_one(id=data.pacientId)
             if not p:
-                raise AccountException('user not found')
+                raise NotFoundError('user not found')
             if not Roles.USER in p.roles:
-                raise AccountException('user not "user"')
+                raise IncorrectError('user not "user"')
             d = await self.uow.account.get_one(id=data.doctorId)
             if not d:
-                raise AccountException('doctor not found')
+                raise NotFoundError('doctor not found')
             if not Roles.DOCTOR in d.roles:
-                raise AccountException('user not doctor')
+                raise NotFoundError('user not doctor')
 
             h = await self.uow.hospital.get_one(id=data.hospitalId)
             if not h:
-                raise HospitalException('hospital not found')
+                raise NotFoundError('hospital not found')
             if not data.room in h.rooms:
-                raise HospitalException('no room at the hospital')
+                raise NotFoundError('no room at the hospital')
 
             date = data.date.replace(tzinfo=None)
 

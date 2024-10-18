@@ -34,15 +34,18 @@ def uowdep(*repos: AbsRepo):
     return lambda: UnitOfWork(repos, connectors_done)
 
 
-secure = HTTPBearer()
+secure = HTTPBearer(auto_error=False)
 
 
-def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)):
+def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)) -> str:
+    if not credentials:
+        raise JWTExceptions(message='not authenticated')
     if credentials.scheme != 'Bearer':
-        raise HTTPException(status_code=401, detail='invalid authentication scheme')
+        raise JWTExceptions(message='invalid authentication scheme')
 
     token = credentials.credentials
     return token
+
 
 
 async def introspection(token: str) -> AccountModel:

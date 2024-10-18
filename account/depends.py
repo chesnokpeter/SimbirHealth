@@ -57,7 +57,7 @@ def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)) -> s
     if not credentials:
         raise JWTExceptions(message='not authenticated')
     if credentials.scheme != 'Bearer':
-        raise JWTExceptions(detail='invalid authentication scheme')
+        raise JWTExceptions(message='invalid authentication scheme')
 
     token = credentials.credentials
     return token

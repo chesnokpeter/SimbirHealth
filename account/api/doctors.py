@@ -25,7 +25,7 @@ async def get_doctors(
 
 
 @doctorsR.get('/{id}')
-async def get_doctor(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account, lostoken))):
+async def get_doctor(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> AccountModel:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     await AccountService(uow).me(int(access['id']))

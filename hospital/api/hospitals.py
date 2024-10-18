@@ -24,7 +24,7 @@ async def get_hospitals(
 
 
 @hospitalsR.get('/{id}')
-async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))):
+async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))) -> HospitalModel:
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h

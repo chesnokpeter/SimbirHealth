@@ -8,9 +8,8 @@ from core.models.account import AccountModel
 from core.infra.postgresql import PostgresConnector
 from core.repos.abstract import AbsRepo
 from core.repos.hospital import HospitalRepo
-from core.exceptions import ServiceException
 from core.uow import UnitOfWork
-
+from hospital.exceptions import JWTExceptions
 
 import httpx
 
@@ -46,9 +45,9 @@ async def introspection(token: str) -> AccountModel:
         )
         r = r.json()
         if r.get('error'):
-            raise ServiceException('invalid jwt token')
+            raise JWTExceptions('invalid jwt token')
         try:
             u = AccountModel(**r)
             return u
         except:
-            raise ServiceException('invalid jwt token')
+            raise JWTExceptions('invalid jwt token')

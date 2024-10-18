@@ -9,10 +9,11 @@ from core.infra.postgresql import PostgresConnector
 from core.repos.abstract import AbsRepo
 from core.repos.timetable import TimetableRepo
 from core.repos.appointment import AppointmentRepo
-from core.exceptions import ServiceException
 from core.uow import UnitOfWork
 from timetable.customrepos import RestDoctorRepo, RestRoomsRepo
 from timetable.customconnectors import RestAPIConnector
+from timetable.exceptions import JWTExceptions
+
 
 import httpx
 
@@ -60,12 +61,12 @@ async def introspection(token: str) -> AccountModel:
         )
         r = r.json()
         if r.get('error'):
-            raise ServiceException('invalid jwt token')
+            raise JWTExceptions('invalid jwt token')
         try:
             u = AccountModel(**r)
             return u
         except:
-            raise ServiceException('invalid jwt token')
+            raise JWTExceptions('invalid jwt token')
 
 
 def get_accrepo(token: str):

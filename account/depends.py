@@ -22,16 +22,25 @@ def accessCreate(payload: dict[str, str]) -> str:
 
 def refreshCreate(payload: dict[str, str]) -> str:
     payload['exp'] = datetime.now(timezone.utc) + timedelta(days=7)
+    payload['refresh'] = True
     return jwt.encode(payload, secret_key, algorithm='HS256')
 
 
-def tokenSecure(token: str) -> dict:
+def tokenSecure(token: str, refresh: bool = False) -> dict:
     try:
-        return jwt.decode(token, secret_key, algorithms=['HS256'])
+        t = jwt.decode(token, secret_key, algorithms=['HS256'])
+        if refresh:
+            return t
+        if t.get('refresh'):
+            raise JWTExceptions(message='token is refresh')
+        return t
+
     except jwt.ExpiredSignatureError:
         raise JWTExceptions(message='invalid jwt token')
     except jwt.InvalidTokenError:
         raise JWTExceptions(message='invalid jwt token')
+    except JWTExceptions as e:
+        raise e
     except:
         raise JWTExceptions(message='invalid jwt token')
 

@@ -50,7 +50,7 @@ async def validate_token(accessToken: str, uow=Depends(uowdep(account, lostoken)
 async def refresh_token(
     refreshToken: str = Body(embed=True), uow=Depends(uowdep(account))
 ) -> AccessSch:
-    refresh = tokenSecure(refreshToken)
+    refresh = tokenSecure(refreshToken, refresh=True)
 
     user = await AccountService(uow).me(int(refresh['id']))
     access = accessCreate({'id': str(user.id)})

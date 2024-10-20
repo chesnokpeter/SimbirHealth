@@ -11,6 +11,16 @@
 3. Timetable URL: http://localhost:8031/docs
 4. Document URL: http://localhost:8041/docs
 
+### Изменения
+`PUT /api/Authentication/SignOut` \
+    добавил body: \
+        `accessToken: str` \
+        `refreshToken: str`
+
+### Настройки jwt
+accessToken: живёт 1 час
+refreshToken: живёт неделю
+
 ### Хочу немного рассказать про архитектуру
 
 Микросервисы выступают лишь интерфейсом доступа к бизнес-логике. В каждом микросервисе есть пакет `core`, где описана основная бизнес-логика (сервисы) и необходимые инструменты.

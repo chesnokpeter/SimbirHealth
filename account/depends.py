@@ -63,7 +63,6 @@ secure = HTTPBearer(auto_error=False)
 
 
 def get_token(credentials: HTTPAuthorizationCredentials = Security(secure)) -> str:
-    print(credentials)
     if not credentials:
         raise JWTExceptions(message='not authenticated')
     if credentials.scheme != 'Bearer':

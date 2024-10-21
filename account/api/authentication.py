@@ -14,6 +14,7 @@ from account.depends import (
     accessCreate,
     refreshCreate,
     tokenSecure,
+    get_token
 )
 
 
@@ -48,10 +49,10 @@ async def validate_token(accessToken: str, uow=Depends(uowdep(account, lostoken)
 
 @authenticationR.post('/Refresh')
 async def refresh_token(
-    refreshToken: str = Body(embed=True), uow=Depends(uowdep(account))
+    refreshToken: str = Body(embed=True), uow=Depends(uowdep(account, lostoken))
 ) -> AccessSch:
     refresh = tokenSecure(refreshToken, refresh=True)
-
+    await AccountService(uow).checklostoken(refreshToken=refreshToken)
     user = await AccountService(uow).me(int(refresh['id']))
     access = accessCreate({'id': str(user.id)})
     return {'accessToken': access}

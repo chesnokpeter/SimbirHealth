@@ -10,5 +10,14 @@ class AccountModel(BaseModel, DbAbsModel):
     lastName: str
     firstName: str
     username: str
-    password: str
+    # password: str
+    roles: list[Roles]
+
+
+class AccountModelWithoutPassword(BaseModel, DbAbsModel):
+    id: int
+
+    lastName: str
+    firstName: str
+    username: str
     roles: list[Roles]

@@ -5,6 +5,7 @@ from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, Ad
 from core.services.abstract import AbsService
 from core.uow import uowaccess
 
+from core.utils import hash
 
 class AccountService(AbsService):
     @uowaccess('account')
@@ -14,14 +15,16 @@ class AccountService(AbsService):
             if exist:
                 raise ConflictError('account already exist')
 
-            u = await self.uow.account.add(**data.model_dump(), roles=[Roles.USER])
+            passhash = hash(data.password)
+
+            u = await self.uow.account.add(**data.model_dump(exclude=['password']), roles=[Roles.USER], password=passhash)
             await self.uow.commit()
             return u.model()
 
     @uowaccess('account')
     async def signin(self, data: SignInSch) -> AccountModel:
         async with self.uow:
-            u = await self.uow.account.get_one(username=data.username, password=data.password)
+            u = await self.uow.account.get_one(username=data.username, password=hash(data.password))
             if not u:
                 raise IncorrectError('login or password is incorrect')
 
@@ -60,8 +63,8 @@ class AccountService(AbsService):
             u = await self.uow.account.get_one(id=id)
             if not u:
                 raise NotFoundError('account does not exist')
-
-            u = await self.uow.account.update(id=id, **data.model_dump())
+            passhash = hash(data.password)
+            u = await self.uow.account.update(id=id, **data.model_dump(exclude=['password']), password=passhash)
             await self.uow.commit()
             return u.model()
 
@@ -77,19 +80,23 @@ class AccountService(AbsService):
             exist = await self.uow.account.get_one(username=data.username)
             if exist:
                 raise ConflictError('account already exist')
+            passhash = hash(data.password)
 
-            u = await self.uow.account.add(**data.model_dump())
+            u = await self.uow.account.add(**data.model_dump(exclude=['password']), password=passhash)
             await self.uow.commit()
             return u.model()
 
     @uowaccess('account')
     async def admin_update(self, id: int, data: AdminCreate) -> AccountModel:
         async with self.uow:
+            exist = await self.uow.account.get_one(id=id)
+            if not exist:
+                raise NotFoundError('account not found')
             exist = await self.uow.account.get_one(username=data.username)
             if exist:
                 raise ConflictError('account already exist')
-
-            u = await self.uow.account.update(id, **data.model_dump())
+            passhash = hash(data.password)
+            u = await self.uow.account.update(id, **data.model_dump(exclude=['password']), password=passhash)
             await self.uow.commit()
             return u.model()
 

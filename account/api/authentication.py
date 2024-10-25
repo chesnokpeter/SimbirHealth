@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, Security, Body, Query
 
 from core.schemas.account import SignUpSch, SignInSch, SignOutSch
 from core.services.account import AccountService
-from core.models.account import AccountModel
-from account.schemas import AccessSch, AccessRefreshSch
+from account.schemas import AccessSch, AccessRefreshSch, AccountModelWithoutPassword
 
 authenticationR = APIRouter(prefix='/Authentication', tags=['Authentication'])
 
@@ -40,11 +39,11 @@ async def signout(data: SignOutSch, uow=Depends(uowdep(lostoken))) -> None:
 
 
 @authenticationR.get('/Validate')
-async def validate_token(accessToken: str, uow=Depends(uowdep(account, lostoken))) -> AccountModel:
+async def validate_token(accessToken: str, uow=Depends(uowdep(account, lostoken))) -> AccountModelWithoutPassword:
     access = tokenSecure(accessToken)
     await AccountService(uow).checklostoken(accessToken)
     user = await AccountService(uow).me(int(access['id']))
-    return user
+    return AccountModelWithoutPassword(**user.model_dump())
 
 
 @authenticationR.post('/Refresh')

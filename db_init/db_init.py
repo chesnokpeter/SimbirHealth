@@ -8,6 +8,8 @@ from core.infra.postgresql.tables import Base, ACCOUNT
 
 from core.enums import Roles
 
+from core.utils import hash
+
 DATABASE_URL = os.environ.get('POSTGRES_URL')
 
 async def main():
@@ -25,7 +27,7 @@ async def main():
             lastName=lastName,
             firstName=firstName,
             username=username,
-            password=password,
+            password=hash(password),
             roles=roles,
         )
         res = await session.execute(stmt)
@@ -35,7 +37,7 @@ async def main():
                 lastName=lastName,
                 firstName=firstName,
                 username=username,
-                password=password,
+                password=hash(password),
                 roles=roles,
             )
             session.add(user)

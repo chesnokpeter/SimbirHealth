@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends, Security, Query, Path
 
 from core.schemas.account import SignUpSch, UpdateSch, AdminCreate
 from core.services.account import AccountService
-from core.models.account import AccountModel
 from core.enums import Roles
 from core.exceptions import PermissionError
-from account.schemas import AccessSch, AccessRefreshSch
+from account.schemas import AccessSch, AccessRefreshSch, AccountModelWithoutPassword
 
 accountsR = APIRouter(prefix='/Accounts', tags=['Accounts'])
 
@@ -21,21 +20,21 @@ from account.depends import (
 
 
 @accountsR.get('/Me')
-async def me(token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> AccountModel:
+async def me(token=Security(get_token), uow=Depends(uowdep(account, lostoken))) -> AccountModelWithoutPassword:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     user = await AccountService(uow).me(int(access['id']))
-    return user
+    return AccountModelWithoutPassword(**user.model_dump())
 
 
 @accountsR.put('/Update')
 async def update(
     data: UpdateSch, token=Security(get_token), uow=Depends(uowdep(account, lostoken))
-) -> SignUpSch:
+) -> AccountModelWithoutPassword:
     access = tokenSecure(token)
     await AccountService(uow).checklostoken(token)
     user = await AccountService(uow).update(int(access['id']), data)
-    return SignUpSch(**user.model_dump())
+    return AccountModelWithoutPassword(**user.model_dump())
 
 
 @accountsR.get('/')
@@ -44,23 +43,23 @@ async def admin_get_accounts(
     from_: int = Query(0, alias='from', gt=-1),
     token=Security(get_token),
     uow=Depends(uowdep(account)),
-) -> list[AccountModel] | None:
+) -> list[AccountModelWithoutPassword] | None:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
         raise PermissionError('user not admin')
     u = await AccountService(uow).get_all(from_, count)
-    return u
+    return [AccountModelWithoutPassword(**i.model_dump()) for i in u]
 
 
 @accountsR.get('/{id}')
 async def get_account(
     id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account))
-) -> AccountModel | None:
+) -> AccountModelWithoutPassword | None:
     access = tokenSecure(token)
     u = await AccountService(uow).me(id)
-    return u
+    return AccountModelWithoutPassword(**u.model_dump()) if u else None
 
 
 @accountsR.post('/')
@@ -81,14 +80,14 @@ async def admin_create(
 @accountsR.put('/{id}')
 async def admin_update(
     data: AdminCreate, id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(account))
-) -> AccountModel:
+) -> AccountModelWithoutPassword:
     access = tokenSecure(token)
 
     user = await AccountService(uow).me(int(access['id']))
     if not Roles.ADMIN in user.roles:
         raise PermissionError('user not admin')
     user = await AccountService(uow).admin_update(id, data)
-    return user
+    return AccountModelWithoutPassword(**user.model_dump())
 
 
 @accountsR.delete('/{id}')

@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from core.models.account import AccountModel
 
 
 class AccessSch(BaseModel):
@@ -7,3 +8,8 @@ class AccessSch(BaseModel):
 
 class AccessRefreshSch(AccessSch):
     refreshToken: str
+
+
+class AccountModelWithoutPassword(AccountModel):
+    # password: str = Field(exclude=True)
+    ...

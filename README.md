@@ -17,6 +17,8 @@
         `accessToken: str` \
         `refreshToken: str`
 
+в микросервисе timetable реализовано жёсткое удаление, тк в задании про это не указано 
+
 ### Настройки jwt
 accessToken: живёт 1 час
 refreshToken: живёт неделю

@@ -71,7 +71,7 @@ class ACCOUNT(Base, DbAbsTable):
             lastName=self.lastName,
             firstName=self.firstName,
             username=self.username,
-            password=self.password,
+            # password=self.password,
             roles=self.roles,
         )
 

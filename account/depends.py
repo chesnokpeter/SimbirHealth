@@ -2,7 +2,6 @@ from datetime import timedelta, datetime, timezone
 import jwt
 from fastapi import Security
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi.exceptions import HTTPException
 
 from core.config import postgres_url, secret_key
 

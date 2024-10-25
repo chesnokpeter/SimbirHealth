@@ -24,7 +24,7 @@ async def get_hospitals(
 
 
 @hospitalsR.get('/{id}')
-async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))) -> HospitalModel:
+async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))) -> HospitalModel | None:
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h
@@ -34,7 +34,7 @@ async def get_hospital(id: int = Path(gt=0), token=Security(get_token), uow=Depe
 @hospitalsR.get('/{id}/Rooms')
 async def get_hospital_rooms(
     id: int = Path(gt=0), token=Security(get_token), uow=Depends(uowdep(hospital))
-) -> HospitalModel | None:
+) -> list[str] | None:
     await introspection(token)
     h = await HospitalService(uow).get_hospital(id)
     return h.rooms if h else None

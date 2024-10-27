@@ -14,7 +14,7 @@ class AbsService(ABC):
 
 
 
-def service_logger(cls) -> 'cls':
+def service_logger(cls) -> 'cls': #type: ignore
     class Logger:
         def __init__(self, *args, **kwargs):
             self.wrapped = cls(*args, **kwargs)

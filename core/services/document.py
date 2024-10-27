@@ -36,6 +36,9 @@ class DocumentService(AbsService):
     @uowaccess('history', 'account', 'hospital')
     async def update(self, id: int, data: CreateHistory) -> HistoryModel:
         async with self.uow:
+            exist = await self.uow.history.get_one(id=id)
+            if not exist:
+                raise NotFoundError('history not found')
             p = await self.uow.account.get_one(id=data.pacientId)
             if not p:
                 raise NotFoundError('user not found')

@@ -47,7 +47,7 @@ class RestAPIAbsRepo(AbsRepo[TSESSION]):
         raise NotImplementedError
 
 
-def repo_logger(cls) -> 'cls':
+def repo_logger(cls) -> 'cls':  #type: ignore
     class Logger:
         def __init__(self, *args, **kwargs):
             self.wrapped = cls(*args, **kwargs)

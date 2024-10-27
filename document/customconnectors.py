@@ -1,5 +1,5 @@
 from core.infra.abstract import AbsConnector
-from core.repos.types import RestConnType
+from document.customtypes import RestConnType
 
 import httpx
 

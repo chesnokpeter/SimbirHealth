@@ -68,12 +68,12 @@ class UnitOfWork(AbsUnitOfWork):
 
 
 class AllReposUnitOfWork(AbsUnitOfWork, ABC):
-    account: AccountRepo | RestAPIAbsRepo
-    lostoken: LostokenRepo | RestAPIAbsRepo
-    hospital: HospitalRepo | RestAPIAbsRepo
-    timetable: TimetableRepo | RestAPIAbsRepo
-    appointment: AppointmentRepo | RestAPIAbsRepo
-    history: HistoryRepo | RestAPIAbsRepo
+    account: AccountRepo
+    lostoken: LostokenRepo
+    hospital: HospitalRepo
+    timetable: TimetableRepo
+    appointment: AppointmentRepo
+    history: HistoryRepo
 
 
 def uowaccess(*access: str):
@@ -81,7 +81,7 @@ def uowaccess(*access: str):
 
     def decorator(func):
         @wraps(func)
-        async def wrapper(self: ..., *args, **kwargs):
+        async def wrapper(self, *args, **kwargs):
             for i in access:
                 if not getattr(self.uow, i, False):
                     raise NoAccessForRepo(f'No Access For Repo "{i}"')

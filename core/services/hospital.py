@@ -1,10 +1,10 @@
 from core.exceptions import NotFoundError
 from core.models.hospital import HospitalModel
 from core.schemas.hospital import CreateHospital
-from core.services.abstract import AbsService
+from core.services.abstract import AbsService, service_logger
 from core.uow import uowaccess
 
-
+@service_logger
 class HospitalService(AbsService):
     @uowaccess('hospital')
     async def create(self, data: CreateHospital) -> HospitalModel:

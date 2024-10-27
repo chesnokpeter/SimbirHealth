@@ -1,7 +1,7 @@
 from core.repos.abstract import AbsRepo
 from core.models.account import AccountModel
 from core.models.hospital import HospitalModel
-from core.repos.types import RestConnType
+from document.customtypes import RestConnType
 
 import httpx
 

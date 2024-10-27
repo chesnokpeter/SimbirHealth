@@ -2,11 +2,12 @@ from core.enums import Roles
 from core.exceptions import NotFoundError, ConflictError, IncorrectError
 from core.models.account import AccountModel
 from core.schemas.account import SignUpSch, SignInSch, SignOutSch, UpdateSch, AdminCreate
-from core.services.abstract import AbsService
+from core.services.abstract import AbsService, service_logger
 from core.uow import uowaccess
 
 from core.utils import hash
 
+@service_logger
 class AccountService(AbsService):
     @uowaccess('account')
     async def signup(self, data: SignUpSch) -> AccountModel:
@@ -122,3 +123,4 @@ class AccountService(AbsService):
         async with self.uow:
             u = await self.uow.account.get_one(id=id)
             return u.model() if u and Roles.DOCTOR in u.roles else None
+

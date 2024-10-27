@@ -1,11 +1,11 @@
 from core.infra.postgresql.tables import TIMETABLE
 from core.repos.defaults.postgres import PostgresDefaultRepo
-
+from core.repos.abstract import repo_logger
 from sqlalchemy import select
 from sqlalchemy.sql.expression import and_
 from datetime import datetime
 
-
+@repo_logger
 class TimetableRepo(PostgresDefaultRepo[TIMETABLE]):
     model = TIMETABLE
     reponame = 'timetable'

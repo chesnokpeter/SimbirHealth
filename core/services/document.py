@@ -1,11 +1,11 @@
 from core.exceptions import NotFoundError, ConflictError, IncorrectError
 from core.models.history import HistoryModel
 from core.schemas.history import CreateHistory
-from core.services.abstract import AbsService
+from core.services.abstract import AbsService, service_logger
 from core.enums import Roles
 from core.uow import uowaccess
 
-
+@service_logger
 class DocumentService(AbsService):
     @uowaccess('history', 'account', 'hospital')
     async def create(self, data: CreateHistory) -> HistoryModel:

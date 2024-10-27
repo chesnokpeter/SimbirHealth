@@ -3,12 +3,12 @@ from core.models.timetable import TimetableModel
 from core.enums import Roles
 from core.schemas.timetable import TimetableCreate, AppointmentsCreate
 from core.models.appoiniment import AppoinimentModel
-from core.services.abstract import AbsService
+from core.services.abstract import AbsService, service_logger
 from core.uow import uowaccess
 
 from datetime import timezone, timedelta, datetime
 
-
+@service_logger
 class TimetableService(AbsService):
     @uowaccess('timetable', 'account', 'hospital')
     async def create(self, data: TimetableCreate) -> TimetableModel:
@@ -187,6 +187,8 @@ class TimetableService(AbsService):
         self, hospital_id: int, to: datetime, from_: datetime
     ) -> list[TimetableModel] | None:
         async with self.uow:
+            from_ = from_.replace(tzinfo=None)
+            to = to.replace(tzinfo=None)
             t = await self.uow.timetable.get_by_time_range(from_, to, hospital_id=hospital_id)
             if not t:
                 raise NotFoundError('hospital timetable not found for this range')
@@ -197,6 +199,8 @@ class TimetableService(AbsService):
         self, doctor_id: int, to: datetime, from_: datetime
     ) -> list[TimetableModel] | None:
         async with self.uow:
+            from_ = from_.replace(tzinfo=None)
+            to = to.replace(tzinfo=None)
             t = await self.uow.timetable.get_by_time_range(from_, to, doctor_id=doctor_id)
             if not t:
                 raise NotFoundError('doctor timetable not found for this range')
@@ -208,6 +212,8 @@ class TimetableService(AbsService):
         self, hospital_id: int, room: str, to: datetime, from_: datetime
     ) -> list[TimetableModel] | None:
         async with self.uow:
+            from_ = from_.replace(tzinfo=None)
+            to = to.replace(tzinfo=None)
             t = await self.uow.timetable.get_by_time_range(
                 from_, to, hospital_id=hospital_id, room=room
             )

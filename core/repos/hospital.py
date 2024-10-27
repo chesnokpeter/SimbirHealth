@@ -1,9 +1,9 @@
 from core.infra.postgresql.tables import HOSPITAL
 from core.repos.defaults.postgres import PostgresDefaultRepo
-
+from core.repos.abstract import repo_logger
 from sqlalchemy import delete, insert, select, update
 
-
+@repo_logger
 class HospitalRepo(PostgresDefaultRepo[HOSPITAL]):
     model = HOSPITAL
     reponame = 'hospital'

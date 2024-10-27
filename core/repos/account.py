@@ -1,8 +1,9 @@
 from core.infra.postgresql.tables import ACCOUNT
 from core.repos.defaults.postgres import PostgresDefaultRepo
+from core.repos.abstract import repo_logger
 from sqlalchemy import delete, insert, select, update
 
-
+@repo_logger
 class AccountRepo(PostgresDefaultRepo[ACCOUNT]):
     model = ACCOUNT
     reponame = 'account'
